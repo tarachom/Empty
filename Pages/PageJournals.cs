@@ -92,14 +92,5 @@ namespace StorageAndTrade
 
             ShowAll();
         }
-
-        void AddLink(VBox vbox, string uri, EventHandler? clickAction = null)
-        {
-            LinkButton lb = new LinkButton(uri, " " + uri) { Halign = Align.Start, Image = new Image(AppContext.BaseDirectory + "images/doc.png"), AlwaysShowImage = true };
-            vbox.PackStart(lb, false, false, 0);
-
-            if (clickAction != null)
-                lb.Clicked += clickAction;
-        }
     }
 }
