@@ -28,8 +28,6 @@ limitations under the License.
 */
 using Gtk;
 
-using System.Reflection;
-
 using AccountingSoftware;
 using StorageAndTrade_1_0.Перелічення;
 
@@ -48,7 +46,7 @@ namespace StorageAndTrade
 
                 lb.Clicked += (object? sender, EventArgs args) =>
                 {
-                    ФункціїДляЖурналів.ВідкритиЖурналВідповідноДоВидуДокументу(typeDoc.Key, new UnigueID(), periodWhere);
+                    ФункціїДляДокументів.ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UnigueID(), periodWhere);
                 };
             }
 
@@ -56,53 +54,6 @@ namespace StorageAndTrade
 
             PopoverSelect.Add(vBox);
             PopoverSelect.ShowAll();
-        }
-
-        public static void ВідкритиЖурналВідповідноДоВидуДокументу(string typeDoc, UnigueID unigueID, ТипПеріодуДляЖурналівДокументів periodWhere = 0)
-        {
-            Assembly ExecutingAssembly = Assembly.GetExecutingAssembly();
-
-            //Простір імен програми
-            string NameSpacePage = "Empty";
-
-            //Простір імен конфігурації
-            string NameSpaceConfig = "StorageAndTrade_1_0.Документи";
-
-            object? listPage;
-
-            try
-            {
-                listPage = ExecutingAssembly.CreateInstance($"{NameSpacePage}.{typeDoc}");
-            }
-            catch (Exception ex)
-            {
-                Message.Error(Program.GeneralForm, ex.Message);
-                return;
-            }
-
-            if (listPage != null)
-            {
-                //Документ який потрібно виділити в списку
-                listPage.GetType().GetProperty("SelectPointerItem")?.SetValue(listPage, unigueID);
-
-                //Заголовок журналу з константи конфігурації
-                string listName = "Список документів";
-                {
-                    Type? documentConst = Type.GetType($"{NameSpaceConfig}.{typeDoc}_Const");
-                    if (documentConst != null)
-                        listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
-                }
-
-                Program.GeneralForm?.CreateNotebookPage(listName, () => { return (Widget)listPage; }, true);
-
-                if (periodWhere != 0)
-                {
-                    listPage.GetType().GetProperty("PeriodWhere")?.SetValue(listPage, periodWhere);
-                    listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
-                }
-                else
-                    listPage.GetType().InvokeMember("LoadRecords", BindingFlags.InvokeMethod, null, listPage, null);
-            }
         }
     }
 }

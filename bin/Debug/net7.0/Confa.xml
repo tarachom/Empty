@@ -6,7 +6,7 @@
   </Author>
   <Desc>
   </Desc>
-  <DateTimeSave>12.05.2023 16:48:56</DateTimeSave>
+  <DateTimeSave>12.05.2023 18:24:10</DateTimeSave>
   <ConstantsBlocks>
     <ConstantsBlock>
       <Name>Системні</Name>
@@ -132,14 +132,21 @@
           <Type>integer</Type>
           <TabularParts />
         </Constant>
+        <Constant>
+          <Name>Блокнот</Name>
+          <NameInTable>col_a3</NameInTable>
+          <Desc>
+          </Desc>
+          <Type>integer</Type>
+          <TabularParts />
+        </Constant>
       </Constants>
     </ConstantsBlock>
   </ConstantsBlocks>
   <Directories>
     <Directory>
       <Name>Користувачі</Name>
-      <FullName>
-      </FullName>
+      <FullName>Користувачі</FullName>
       <Table>tab_a08</Table>
       <Desc>
       </Desc>
@@ -188,20 +195,179 @@
         </Field>
       </Fields>
       <TabularParts />
-      <TabularLists />
+      <TabularLists>
+        <TabularList>
+          <Name>Записи</Name>
+          <Desc>
+          </Desc>
+          <IsTree>0</IsTree>
+          <Fields>
+            <Field>
+              <Name>Код</Name>
+              <Caption>Код</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>False</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+            <Field>
+              <Name>Назва</Name>
+              <Caption>Назва</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>True</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+          </Fields>
+        </TabularList>
+        <TabularList>
+          <Name>ЗаписиШвидкийВибір</Name>
+          <Desc>
+          </Desc>
+          <IsTree>0</IsTree>
+          <Fields>
+            <Field>
+              <Name>Код</Name>
+              <Caption>Код</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>False</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+            <Field>
+              <Name>Назва</Name>
+              <Caption>Назва</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>True</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+          </Fields>
+        </TabularList>
+      </TabularLists>
       <TriggerFunctions>
-        <New>
-        </New>
-        <Copying>
-        </Copying>
-        <BeforeSave>
-        </BeforeSave>
-        <AfterSave>
-        </AfterSave>
-        <SetDeletionLabel>
-        </SetDeletionLabel>
-        <BeforeDelete>
-        </BeforeDelete>
+        <New>Користувачі_Triggers.New</New>
+        <Copying>Користувачі_Triggers.Copying</Copying>
+        <BeforeSave>Користувачі_Triggers.BeforeSave</BeforeSave>
+        <AfterSave>Користувачі_Triggers.AfterSave</AfterSave>
+        <SetDeletionLabel>Користувачі_Triggers.SetDeletionLabel</SetDeletionLabel>
+        <BeforeDelete>Користувачі_Triggers.BeforeDelete</BeforeDelete>
+      </TriggerFunctions>
+    </Directory>
+    <Directory>
+      <Name>Блокнот</Name>
+      <FullName>Блокнот</FullName>
+      <Table>tab_a01</Table>
+      <Desc>
+      </Desc>
+      <AutoNum>1</AutoNum>
+      <Fields>
+        <Field>
+          <Name>Код</Name>
+          <NameInTable>col_a1</NameInTable>
+          <Type>string</Type>
+          <Desc>Код</Desc>
+          <IsPresentation>0</IsPresentation>
+          <IsIndex>1</IsIndex>
+          <IsFullTextSearch>0</IsFullTextSearch>
+          <Multiline>0</Multiline>
+        </Field>
+        <Field>
+          <Name>Назва</Name>
+          <NameInTable>col_a2</NameInTable>
+          <Type>string</Type>
+          <Desc>Назва</Desc>
+          <IsPresentation>1</IsPresentation>
+          <IsIndex>1</IsIndex>
+          <IsFullTextSearch>0</IsFullTextSearch>
+          <Multiline>0</Multiline>
+        </Field>
+        <Field>
+          <Name>Запис</Name>
+          <NameInTable>col_a3</NameInTable>
+          <Type>string</Type>
+          <Desc>
+          </Desc>
+          <IsPresentation>0</IsPresentation>
+          <IsIndex>0</IsIndex>
+          <IsFullTextSearch>1</IsFullTextSearch>
+          <Multiline>0</Multiline>
+        </Field>
+      </Fields>
+      <TabularParts />
+      <TabularLists>
+        <TabularList>
+          <Name>Записи</Name>
+          <Desc>
+          </Desc>
+          <IsTree>0</IsTree>
+          <Fields>
+            <Field>
+              <Name>Код</Name>
+              <Caption>Код</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>True</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+            <Field>
+              <Name>Назва</Name>
+              <Caption>Назва</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>False</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+          </Fields>
+        </TabularList>
+        <TabularList>
+          <Name>ЗаписиШвидкийВибір</Name>
+          <Desc>
+          </Desc>
+          <IsTree>0</IsTree>
+          <Fields>
+            <Field>
+              <Name>Код</Name>
+              <Caption>Код</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>False</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+            <Field>
+              <Name>Назва</Name>
+              <Caption>Назва</Caption>
+              <Size>0</Size>
+              <SortNum>100</SortNum>
+              <SortField>False</SortField>
+              <Type>string</Type>
+              <Pointer>
+              </Pointer>
+            </Field>
+          </Fields>
+        </TabularList>
+      </TabularLists>
+      <TriggerFunctions>
+        <New>Блокнот_Triggers.New</New>
+        <Copying>Блокнот_Triggers.Copying</Copying>
+        <BeforeSave>Блокнот_Triggers.BeforeSave</BeforeSave>
+        <AfterSave>Блокнот_Triggers.AfterSave</AfterSave>
+        <SetDeletionLabel>Блокнот_Triggers.SetDeletionLabel</SetDeletionLabel>
+        <BeforeDelete>Блокнот_Triggers.BeforeDelete</BeforeDelete>
       </TriggerFunctions>
     </Directory>
   </Directories>

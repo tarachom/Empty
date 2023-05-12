@@ -101,7 +101,7 @@ namespace StorageAndTrade
                 Assembly ExecutingAssembly = Assembly.GetExecutingAssembly();
 
                 //Простір імен програми
-                string NameSpacePage = "Empty";
+                string NameSpacePage = "StorageAndTrade";
 
                 //Простір імен конфігурації
                 string NameSpaceConfig = $"StorageAndTrade_1_0.{PointerName}";
@@ -188,7 +188,7 @@ namespace StorageAndTrade
                 foreach (KeyValuePair<string, ConfigurationDirectories> directories in Config.Kernel!.Conf.Directories)
                 {
                     ListBoxRow row = new ListBoxRow() { Name = directories.Key };
-                    row.Add(new Label(directories.Value.Name) { Halign = Align.Start });
+                    row.Add(new Label(directories.Value.FullName) { Halign = Align.Start });
 
                     listBox.Add(row);
                 }
@@ -218,7 +218,7 @@ namespace StorageAndTrade
                 foreach (KeyValuePair<string, ConfigurationDocuments> documents in Config.Kernel!.Conf.Documents)
                 {
                     ListBoxRow row = new ListBoxRow() { Name = documents.Key };
-                    row.Add(new Label(documents.Value.Name) { Halign = Align.Start });
+                    row.Add(new Label(documents.Value.FullName) { Halign = Align.Start });
 
                     listBox.Add(row);
                 }

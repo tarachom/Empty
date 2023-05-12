@@ -37,6 +37,7 @@ namespace StorageAndTrade
 
         public PageHome() : base()
         {
+            //АктивніКористувачі
             {
                 HBox hBox = new HBox();
                 hBox.PackStart(АктивніКористувачі, false, false, 5);
