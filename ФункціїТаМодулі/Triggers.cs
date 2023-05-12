@@ -109,5 +109,39 @@ namespace StorageAndTrade_1_0.Довідники
 
 namespace StorageAndTrade_1_0.Документи
 {
-    
+
+    class Подія_Triggers
+    {
+        public static void New(Подія_Objest ДокументОбєкт)
+        {
+            ДокументОбєкт.НомерДок = (++НумераціяДокументів.Подія_Const).ToString("D8");
+            ДокументОбєкт.ДатаДок = DateTime.Now;
+        }
+
+        public static void Copying(Подія_Objest ДокументОбєкт, Подія_Objest Основа)
+        {
+            ДокументОбєкт.Назва += " - Копія";
+        }
+
+        public static void BeforeSave(Подія_Objest ДокументОбєкт)
+        {
+            ДокументОбєкт.Назва = $"{Подія_Const.FULLNAME} №{ДокументОбєкт.НомерДок} від {ДокументОбєкт.ДатаДок.ToShortDateString()}";
+        }
+
+        public static void AfterSave(Подія_Objest ДокументОбєкт)
+        {
+
+        }
+
+        public static void SetDeletionLabel(Подія_Objest ДокументОбєкт, bool label)
+        {
+
+        }
+
+        public static void BeforeDelete(Подія_Objest ДокументОбєкт)
+        {
+
+        }
+    }
+
 }

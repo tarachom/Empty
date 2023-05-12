@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 12.05.2023 18:24:10
+ * Дата конфігурації: 12.05.2023 19:41:32
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон Gtk.xslt
@@ -537,11 +537,284 @@ namespace StorageAndTrade_1_0.Документи.ТабличніСписки
     }
 
     
+    #region DOCUMENT "Подія"
+    
+      
+    public class Подія_Записи
+    {
+        string Image 
+        {
+            get
+            {
+                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
+            }
+        }
+
+        bool DeletionLabel = false;
+        bool Spend = false;
+        string ID = "";
+        
+
+        Array ToArray()
+        {
+            return new object[] { new Gdk.Pixbuf(Image), ID, Spend /*Проведений документ*/
+            /* */  };
+        }
+
+        public static ListStore Store = new ListStore(typeof(Gdk.Pixbuf) /* Image */, typeof(string) /* ID */, typeof(bool) /* Spend Проведений документ*/
+            );
+
+        public static void AddColumns(TreeView treeView)
+        {
+            treeView.AppendColumn(new TreeViewColumn("", new CellRendererPixbuf(), "pixbuf", 0)); /*Image*/ /* { Ypad = 0 } */
+            treeView.AppendColumn(new TreeViewColumn("ID", new CellRendererText(), "text", 1) { Visible = false }); /*UID*/
+            treeView.AppendColumn(new TreeViewColumn("", new CellRendererToggle(), "active", 2)); /*Проведений документ*/
+            /* */
+            
+            //Пустишка
+            treeView.AppendColumn(new TreeViewColumn());
+        }
+
+        public static List<Where> Where { get; set; } = new List<Where>();
+
+        public static void ДодатиВідбірПоПеріоду(Перелічення.ТипПеріодуДляЖурналівДокументів типПеріоду)
+        {
+            Where.Clear();
+            Інтерфейс.ДодатиВідбірПоПеріоду(Where, Документи.Подія_Const.ДатаДок, типПеріоду);
+        }
+
+        public static UnigueID? DocumentPointerItem { get; set; }
+        public static UnigueID? SelectPointerItem { get; set; }
+        public static TreePath? FirstPath;
+        public static TreePath? SelectPath;
+        public static TreePath? CurrentPath;
+
+        public static void LoadRecords()
+        {
+            Store.Clear();
+            FirstPath = SelectPath = CurrentPath = null;
+
+            Документи.Подія_Select Подія_Select = new Документи.Подія_Select();
+            Подія_Select.QuerySelect.Field.AddRange(
+                new string[]
+                { "deletion_label" /*Помітка на видалення*/,
+                  "spend" /*Проведений документ*/
+                    
+                });
+
+            /* Where */
+            Подія_Select.QuerySelect.Where = Where;
+
+            
+
+            /* SELECT */
+            Подія_Select.Select();
+            while (Подія_Select.MoveNext())
+            {
+                Документи.Подія_Pointer? cur = Подія_Select.Current;
+
+                if (cur != null)
+                {
+                    Подія_Записи Record = new Подія_Записи
+                    {
+                        ID = cur.UnigueID.ToString(),
+                        Spend = (bool)cur.Fields?["spend"]!, /*Проведений документ*/
+                        DeletionLabel = (bool)cur.Fields?["deletion_label"]!, /*Помітка на видалення*/
+                        
+                    };
+
+                    TreeIter CurrentIter = Store.AppendValues(Record.ToArray());
+                    CurrentPath = Store.GetPath(CurrentIter);
+
+                    if (FirstPath == null)
+                        FirstPath = CurrentPath;
+
+                    if (DocumentPointerItem != null || SelectPointerItem != null)
+                    {
+                        string UidSelect = SelectPointerItem != null ? SelectPointerItem.ToString() : DocumentPointerItem!.ToString();
+
+                        if (Record.ID == UidSelect)
+                            SelectPath = CurrentPath;
+                    }
+                }
+            }
+        }
+    }
+	    
+    #endregion
+    
 
     //
     // Журнали
     //
 
+    
+    #region JOURNAL "Повний"
+    
+    public class Журнали_Повний
+    {
+        string Image 
+        {
+            get
+            {
+                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
+            }
+        }
+
+        bool DeletionLabel = false;
+        bool Spend = false;
+        string ID = "";
+        string Type = ""; //Тип документу
+        
+        string Назва = "";
+        string Дата = "";
+        string Номер = "";
+        string Коментар = "";
+
+        // Масив для запису стрічки в Store
+        Array ToArray()
+        {
+            return new object[] { new Gdk.Pixbuf(Image), ID, Type, Spend /*Проведений документ*/
+            /* */ , Назва, Дата, Номер, Коментар };
+        }
+
+        // Джерело даних для списку
+        public static ListStore Store = new ListStore(
+          typeof(Gdk.Pixbuf) /* Image */, 
+          typeof(string) /* ID */, 
+          typeof(string) /* Type */, 
+          typeof(bool) /* Spend Проведений документ*/
+            , typeof(string) /* Назва */
+            , typeof(string) /* Дата */
+            , typeof(string) /* Номер */
+            , typeof(string) /* Коментар */
+            );
+
+        // Добавлення колонок в список
+        public static void AddColumns(TreeView treeView)
+        {
+            treeView.AppendColumn(new TreeViewColumn("", new CellRendererPixbuf(), "pixbuf", 0)); /*Image*/ /* { Ypad = 0 } */
+            treeView.AppendColumn(new TreeViewColumn("ID", new CellRendererText(), "text", 1) { Visible = false }); /*UID*/
+            treeView.AppendColumn(new TreeViewColumn("Type", new CellRendererText(), "text", 2) { Visible = false }); /*Type*/
+            treeView.AppendColumn(new TreeViewColumn("", new CellRendererToggle(), "active", 3)); /*Проведений документ*/
+            /* */
+            treeView.AppendColumn(new TreeViewColumn("Назва", new CellRendererText() { Xpad = 4 }, "text", 4) { MinWidth = 20, Resizable = true } ); /*Назва*/
+            treeView.AppendColumn(new TreeViewColumn("Дата", new CellRendererText() { Xpad = 4 }, "text", 5) { MinWidth = 20, Resizable = true } ); /*Дата*/
+            treeView.AppendColumn(new TreeViewColumn("Номер", new CellRendererText() { Xpad = 4 }, "text", 6) { MinWidth = 20, Resizable = true } ); /*Номер*/
+            treeView.AppendColumn(new TreeViewColumn("Коментар", new CellRendererText() { Xpad = 4 }, "text", 7) { MinWidth = 20, Resizable = true } ); /*Коментар*/
+            
+            //Пустишка
+            treeView.AppendColumn(new TreeViewColumn());
+        }
+
+        // Словник з відборами, ключ це Тип документу
+        public static Dictionary<string, List<Where>> Where { get; set; } = new Dictionary<string, List<Where>>();
+
+        // Добавляє відбір по періоду в словник відборів
+        public static void ДодатиВідбірПоПеріоду(Перелічення.ТипПеріодуДляЖурналівДокументів типПеріоду)
+        {
+            Where.Clear();
+            
+            {
+                List<Where> where = new List<Where>();
+                Where.Add("Подія", where);
+                Інтерфейс.ДодатиВідбірПоПеріоду(where, Подія_Const.ДатаДок, типПеріоду);
+            }
+              
+        }
+
+        // Список документів які входять в журнал
+        public static Dictionary<string, string> AllowDocument()
+        {
+            Dictionary<string, string> allowDoc = new Dictionary<string, string>();
+            allowDoc.Add("Подія", "Подія");
+            
+            return allowDoc;
+        }
+
+        public static UnigueID? SelectPointerItem { get; set; }
+        public static TreePath? SelectPath;
+        public static TreePath? CurrentPath;
+
+        // Завантаження даних
+        public static void LoadRecords()
+        {
+            Store.Clear();
+            SelectPath = CurrentPath = null;
+            List<string> allQuery = new List<string>();
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+
+          
+              {
+                  Query query = new Query(Документи.Подія_Const.TABLE);
+
+                  // Встановлення відбору для даного типу документу
+                  if (Where.ContainsKey("Подія") && Where["Подія"].Count != 0) {
+                      query.Where = Where["Подія"];
+                      foreach(Where field in query.Where)
+                          paramQuery.Add(field.Alias, field.Value);
+                  }
+
+                  query.FieldAndAlias.Add(new NameValue<string>("'Подія'", "type"));
+                  query.Field.Add("deletion_label");
+                  query.Field.Add("spend");
+                  
+                              query.FieldAndAlias.Add(
+                                  new NameValue<string>(Документи.Подія_Const.TABLE + "." + Документи.Подія_Const.Назва, "Назва"));
+                            
+                              query.FieldAndAlias.Add(
+                                  new NameValue<string>(Документи.Подія_Const.TABLE + "." + Документи.Подія_Const.ДатаДок, "Дата"));
+                            
+                              query.FieldAndAlias.Add(
+                                  new NameValue<string>(Документи.Подія_Const.TABLE + "." + Документи.Подія_Const.НомерДок, "Номер"));
+                            
+                              query.FieldAndAlias.Add(
+                                  new NameValue<string>(Документи.Подія_Const.TABLE + "." + Документи.Подія_Const.Коментар, "Коментар"));
+                            
+
+                  allQuery.Add(query.Construct());
+              }
+              
+
+            string unionAllQuery = string.Join("\nUNION\n", allQuery);
+
+            unionAllQuery += "\nORDER BY Дата";
+          
+            string[] columnsName;
+            List<Dictionary<string, object>> listRow;
+
+            Config.Kernel!.DataBase.SelectRequest(unionAllQuery, paramQuery, out columnsName, out listRow);
+
+            foreach (Dictionary<string, object> row in listRow)
+            {
+                Журнали_Повний record = new Журнали_Повний();
+                record.ID = row["uid"]?.ToString() ?? "";
+                record.Type = row["type"]?.ToString() ?? "";
+                record.DeletionLabel = (bool)row["deletion_label"];
+                record.Spend = (bool)row["spend"];
+                
+                    record.Назва = row["Назва"] != DBNull.Value ? (row["Назва"]?.ToString() ?? "") : "";
+                
+                    record.Дата = row["Дата"] != DBNull.Value ? (row["Дата"]?.ToString() ?? "") : "";
+                
+                    record.Номер = row["Номер"] != DBNull.Value ? (row["Номер"]?.ToString() ?? "") : "";
+                
+                    record.Коментар = row["Коментар"] != DBNull.Value ? (row["Коментар"]?.ToString() ?? "") : "";
+                
+
+                TreeIter CurrentIter = Store.AppendValues(record.ToArray());
+                CurrentPath = Store.GetPath(CurrentIter);
+
+                if (SelectPointerItem != null)
+                {
+                    if (record.ID == SelectPointerItem.ToString())
+                        SelectPath = CurrentPath;
+                }
+            }
+          
+        }
+    }
+    #endregion
     
 }
 

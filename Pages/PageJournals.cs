@@ -37,11 +37,17 @@ namespace StorageAndTrade
         {
             //Список
             HBox hBoxList = new HBox(false, 0);
+            PackStart(hBoxList, false, false, 10);
 
             VBox vLeft = new VBox(false, 0);
             hBoxList.PackStart(vLeft, false, false, 5);
 
-            PackStart(hBoxList, false, false, 10);
+            Link.AddLink(vLeft, "Повний", () =>
+            {
+                Журнал_Повний page = new Журнал_Повний();
+                Program.GeneralForm?.CreateNotebookPage("Повний", () => { return page; });
+                page.SetValue();
+            });
 
             ShowAll();
         }

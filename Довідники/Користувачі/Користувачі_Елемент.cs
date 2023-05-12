@@ -25,6 +25,8 @@ namespace StorageAndTrade
 
         Entry Коментар = new Entry() { WidthRequest = 500 };
 
+        CheckButton Заблокований = new CheckButton("Заблокований");
+
         #endregion
 
         #region TabularParts
@@ -45,6 +47,8 @@ namespace StorageAndTrade
 
             CreateField(vBox, "Коментар:", Коментар);
 
+            CreateField(vBox, null, Заблокований);
+
         }
 
         protected override void CreatePack2(VBox vBox)
@@ -61,7 +65,9 @@ namespace StorageAndTrade
 
             Код.Text = Користувачі_Objest.Код;
             Назва.Text = Користувачі_Objest.Назва;
+
             Коментар.Text = Користувачі_Objest.Коментар;
+            Заблокований.Active = Користувачі_Objest.Заблокований;
 
         }
 
@@ -72,7 +78,9 @@ namespace StorageAndTrade
 
             Користувачі_Objest.Код = Код.Text;
             Користувачі_Objest.Назва = Назва.Text;
+
             Користувачі_Objest.Коментар = Коментар.Text;
+            Користувачі_Objest.Заблокований = Заблокований.Active;
 
         }
 
@@ -88,6 +96,8 @@ namespace StorageAndTrade
             {
                 MsgError(ex);
             }
+
+
         }
     }
 }

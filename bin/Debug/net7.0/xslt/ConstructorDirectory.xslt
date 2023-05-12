@@ -110,7 +110,7 @@ namespace StorageAndTrade
                     NumericControl <xsl:value-of select="Name"/> = new NumericControl();
                 </xsl:when>
                 <xsl:when test="Type = 'boolean'">
-                    bool <xsl:value-of select="Name"/>;
+                    CheckButton <xsl:value-of select="Name"/> = new CheckButton("<xsl:value-of select="Name"/>");
                 </xsl:when>
                 <xsl:when test="Type = 'date' or Type = 'datetime'">
                     DateTimeControl <xsl:value-of select="Name"/> = new DateTimeControl()<xsl:if test="Type = 'date'">{ OnlyDate = true }</xsl:if>;
@@ -130,19 +130,19 @@ namespace StorageAndTrade
                     ComboBoxText <xsl:value-of select="$namePointer"/> = new ComboBoxText();
                 </xsl:when>
                 <xsl:when test="Type = 'any_pointer'">
-                    Guid <xsl:value-of select="Name"/> = new Guid();
+                    //Guid <xsl:value-of select="Name"/> = new Guid();
                 </xsl:when>
                 <xsl:when test="Type = 'bytea'">
-                    byte[] <xsl:value-of select="Name"/> = new byte[]{ };
+                    //byte[] <xsl:value-of select="Name"/> = new byte[]{ };
                 </xsl:when>
                 <xsl:when test="Type = 'string[]'">
-                    string[] <xsl:value-of select="Name"/> = new string[]{ };
+                    //string[] <xsl:value-of select="Name"/> = new string[]{ };
                 </xsl:when>
                 <xsl:when test="Type = 'integer'">
-                    int[] <xsl:value-of select="Name"/> = new int[]{ };
+                    //int[] <xsl:value-of select="Name"/> = new int[]{ };
                 </xsl:when>
                 <xsl:when test="Type = 'numeric'">
-                    decimal[] <xsl:value-of select="Name"/> = new decimal[]{ };
+                    //decimal[] <xsl:value-of select="Name"/> = new decimal[]{ };
                 </xsl:when>
             </xsl:choose>
         </xsl:for-each>
@@ -180,7 +180,7 @@ namespace StorageAndTrade
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:when>
-                    <xsl:when test="Type = 'composite_pointer'">
+                    <xsl:when test="Type = 'composite_pointer' or Type = 'boolean'">
                         CreateField(vBox, null, <xsl:value-of select="Name"/>);
                     </xsl:when>
                     <xsl:when test="Type = 'pointer'">
@@ -224,6 +224,9 @@ namespace StorageAndTrade
                     <xsl:when test="Type = 'integer' or Type = 'numeric' or Type = 'date' or Type = 'datetime' or Type = 'time'">
                         <xsl:value-of select="Name"/>.Value = <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/>;
                     </xsl:when>
+                    <xsl:when test="Type = 'boolean'">
+                        <xsl:value-of select="Name"/>.Active = <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/>;
+                    </xsl:when>
                     <xsl:when test="Type = 'composite_pointer'">
                         <xsl:value-of select="Name"/>.Pointer = <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/>;
                     </xsl:when>
@@ -237,7 +240,7 @@ namespace StorageAndTrade
                         if (<xsl:value-of select="$namePointer"/>.Active == -1) <xsl:value-of select="$namePointer"/>.Active = 0;
                     </xsl:when>
                     <xsl:when test="Type = 'boolean' or Type = 'any_pointer' or Type = 'bytea' or Type = 'string[]' or Type = 'integer' or Type = 'numeric'">
-                        <xsl:value-of select="Name"/> = <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/>;
+                        //<xsl:value-of select="Name"/> = <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/>;
                     </xsl:when>
                 </xsl:choose>
             </xsl:for-each>
@@ -269,6 +272,9 @@ namespace StorageAndTrade
                      <xsl:when test="Type = 'integer' or Type = 'numeric' or Type = 'date' or Type = 'datetime' or Type = 'time'">
                         <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/> = <xsl:value-of select="Name"/>.Value;
                     </xsl:when>
+                    <xsl:when test="Type = 'boolean'">
+                        <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/> = <xsl:value-of select="Name"/>.Active;
+                    </xsl:when>
                     <xsl:when test="Type = 'composite_pointer'">
                         <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/> = <xsl:value-of select="Name"/>.Pointer;
                     </xsl:when>
@@ -282,7 +288,7 @@ namespace StorageAndTrade
                             <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/> = Enum.Parse&lt;<xsl:value-of select="$namePointer"/>&gt;(<xsl:value-of select="$namePointer"/>.ActiveId);
                     </xsl:when>
                     <xsl:when test="Type = 'boolean' or Type = 'any_pointer' or Type = 'bytea' or Type = 'string[]' or Type = 'integer' or Type = 'numeric'">
-                        <xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/> = <xsl:value-of select="Name"/>;
+                        //<xsl:value-of select="$DirectoryName"/>_Objest.<xsl:value-of select="Name"/> = <xsl:value-of select="Name"/>;
                     </xsl:when>
                 </xsl:choose>
             </xsl:for-each>

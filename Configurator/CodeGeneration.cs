@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 12.05.2023 18:24:10
+ * Дата конфігурації: 12.05.2023 19:41:32
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -49,6 +49,7 @@ namespace StorageAndTrade_1_0
             Константи.ЖурналиДокументів.ReadAll();
             Константи.ПриЗапускуПрограми.ReadAll();
             Константи.НумераціяДовідників.ReadAll();
+            Константи.НумераціяДокументів.ReadAll();
             
         }
     }
@@ -78,7 +79,12 @@ namespace StorageAndTrade_1_0
                 if (pointer == "Документи")
                 {
                     
-                    return "";
+                    switch (type)
+                    {
+                        
+                        case "Подія": return new Документи.Подія_Pointer(uuidAndText.Uuid).GetPresentation();
+                        
+                    }
                     
                 }
                 else if (pointer == "Довідники")
@@ -337,6 +343,42 @@ namespace StorageAndTrade_1_0.Константи
     }
     #endregion
     
+	  #region CONSTANTS BLOCK "НумераціяДокументів"
+    public static class НумераціяДокументів
+    {
+        public static void ReadAll()
+        {
+            
+            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+            bool IsSelect = Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
+                 new string[] { "col_a4" }, fieldValue);
+            
+            if (IsSelect)
+            {
+                m_Подія_Const = (fieldValue["col_a4"] != DBNull.Value) ? (int)fieldValue["col_a4"] : 0;
+                
+            }
+			      
+        }
+        
+        
+        static int m_Подія_Const = 0;
+        public static int Подія_Const
+        {
+            get 
+            {
+                return m_Подія_Const;
+            }
+            set
+            {
+                m_Подія_Const = value;
+                Config.Kernel!.DataBase.SaveConstants("tab_constants", "col_a4", m_Подія_Const);
+            }
+        }
+             
+    }
+    #endregion
+    
 }
 
 namespace StorageAndTrade_1_0.Довідники
@@ -353,17 +395,19 @@ namespace StorageAndTrade_1_0.Довідники
         public const string Назва = "col_a2";
         public const string КодВСпеціальнійТаблиці = "col_a3";
         public const string Коментар = "col_a4";
+        public const string Заблокований = "col_a5";
     }
 
     public class Користувачі_Objest : DirectoryObject
     {
         public Користувачі_Objest() : base(Config.Kernel!, "tab_a08",
-             new string[] { "col_a1", "col_a2", "col_a3", "col_a4" }) 
+             new string[] { "col_a1", "col_a2", "col_a3", "col_a4", "col_a5" }) 
         {
             Код = "";
             Назва = "";
             КодВСпеціальнійТаблиці = new Guid();
             Коментар = "";
+            Заблокований = false;
             
         }
         
@@ -382,6 +426,7 @@ namespace StorageAndTrade_1_0.Довідники
                 Назва = base.FieldValue["col_a2"].ToString() ?? "";
                 КодВСпеціальнійТаблиці = (base.FieldValue["col_a3"] != DBNull.Value) ? (Guid)base.FieldValue["col_a3"] : Guid.Empty;
                 Коментар = base.FieldValue["col_a4"].ToString() ?? "";
+                Заблокований = (base.FieldValue["col_a5"] != DBNull.Value) ? (bool)base.FieldValue["col_a5"] : false;
                 
                 BaseClear();
                 return true;
@@ -397,6 +442,7 @@ namespace StorageAndTrade_1_0.Довідники
             base.FieldValue["col_a2"] = Назва;
             base.FieldValue["col_a3"] = КодВСпеціальнійТаблиці;
             base.FieldValue["col_a4"] = Коментар;
+            base.FieldValue["col_a5"] = Заблокований;
             
             bool result = BaseSave();
             if (result)
@@ -414,6 +460,7 @@ namespace StorageAndTrade_1_0.Довідники
             copy.Назва = Назва;
             copy.КодВСпеціальнійТаблиці = КодВСпеціальнійТаблиці;
             copy.Коментар = Коментар;
+            copy.Заблокований = Заблокований;
             
             
             if (copyTableParts)
@@ -459,6 +506,7 @@ namespace StorageAndTrade_1_0.Довідники
         public string Назва { get; set; }
         public Guid КодВСпеціальнійТаблиці { get; set; }
         public string Коментар { get; set; }
+        public bool Заблокований { get; set; }
         
     }
 
@@ -866,6 +914,276 @@ namespace StorageAndTrade_1_0.Перелічення
 namespace StorageAndTrade_1_0.Документи
 {
     
+    #region DOCUMENT "Подія"
+    public static class Подія_Const
+    {
+        public const string FULLNAME = "Подія";
+        public const string TABLE = "tab_a03";
+        public const string DELETION_LABEL = "deletion_label";
+        
+        
+        public const string Назва = "docname";
+        public const string ДатаДок = "docdate";
+        public const string НомерДок = "docnomer";
+        public const string Коментар = "col_a1";
+    }
+
+    public static class Подія_Export
+    {
+        public static void ToXmlFile(Подія_Pointer Подія, string pathToSave)
+        {
+            Подія_Objest? obj = Подія.GetDocumentObject(true);
+            if (obj == null) return;
+
+            XmlWriter xmlWriter = XmlWriter.Create(pathToSave, new XmlWriterSettings() { Indent = true, Encoding = System.Text.Encoding.UTF8 });
+            xmlWriter.WriteStartDocument();
+            xmlWriter.WriteStartElement("root");
+            xmlWriter.WriteAttributeString("uid", obj.UnigueID.ToString());
+            
+            xmlWriter.WriteStartElement("Назва");
+            xmlWriter.WriteAttributeString("type", "string");
+            
+                xmlWriter.WriteValue(obj.Назва);
+              
+            xmlWriter.WriteEndElement(); //Назва
+            xmlWriter.WriteStartElement("ДатаДок");
+            xmlWriter.WriteAttributeString("type", "datetime");
+            
+                xmlWriter.WriteValue(obj.ДатаДок);
+              
+            xmlWriter.WriteEndElement(); //ДатаДок
+            xmlWriter.WriteStartElement("НомерДок");
+            xmlWriter.WriteAttributeString("type", "string");
+            
+                xmlWriter.WriteValue(obj.НомерДок);
+              
+            xmlWriter.WriteEndElement(); //НомерДок
+            xmlWriter.WriteStartElement("Коментар");
+            xmlWriter.WriteAttributeString("type", "string");
+            
+                xmlWriter.WriteValue(obj.Коментар);
+              
+            xmlWriter.WriteEndElement(); //Коментар
+
+            xmlWriter.WriteEndElement(); //root
+            xmlWriter.WriteEndDocument();
+            xmlWriter.Close();
+        }
+    }
+
+    public class Подія_Objest : DocumentObject
+    {
+        public Подія_Objest() : base(Config.Kernel!, "tab_a03", "Подія",
+             new string[] { "docname", "docdate", "docnomer", "col_a1" }) 
+        {
+            Назва = "";
+            ДатаДок = DateTime.MinValue;
+            НомерДок = "";
+            Коментар = "";
+            
+        }
+        
+        public void New()
+        {
+            BaseNew();
+            Подія_Triggers.New(this);
+            
+        }
+
+        public bool Read(UnigueID uid)
+        {
+            if (BaseRead(uid))
+            {
+                Назва = base.FieldValue["docname"].ToString() ?? "";
+                ДатаДок = (base.FieldValue["docdate"] != DBNull.Value) ? DateTime.Parse(base.FieldValue["docdate"].ToString() ?? DateTime.MinValue.ToString()) : DateTime.MinValue;
+                НомерДок = base.FieldValue["docnomer"].ToString() ?? "";
+                Коментар = base.FieldValue["col_a1"].ToString() ?? "";
+                
+                BaseClear();
+                return true;
+            }
+            else
+                return false;
+        }
+        
+        public bool Save()
+        {
+            Подія_Triggers.BeforeSave(this);
+            base.FieldValue["docname"] = Назва;
+            base.FieldValue["docdate"] = ДатаДок;
+            base.FieldValue["docnomer"] = НомерДок;
+            base.FieldValue["col_a1"] = Коментар;
+            
+            bool result = BaseSave();
+            
+            if (result)
+            {
+                Подія_Triggers.AfterSave(this);
+                BaseWriteFullTextSearch(GetBasis(), new string[] {  });
+            }
+
+            return result;
+        }
+
+        public bool SpendTheDocument(DateTime spendDate)
+        {
+            bool rezult = Подія_SpendTheDocument.Spend(this);
+                BaseSpend(rezult, spendDate);
+                return rezult;
+        }
+
+        public void ClearSpendTheDocument()
+        {
+            Подія_SpendTheDocument.ClearSpend(this);
+            BaseSpend(false, DateTime.MinValue);
+        }
+
+        public Подія_Objest Copy(bool copyTableParts = false)
+        {
+            Подія_Objest copy = new Подія_Objest();
+            copy.Назва = Назва;
+            copy.ДатаДок = ДатаДок;
+            copy.НомерДок = НомерДок;
+            copy.Коментар = Коментар;
+            
+
+            if (copyTableParts)
+            {
+            
+            }
+
+            copy.New();
+            Подія_Triggers.Copying(copy, this);
+            return copy;
+        }
+
+        public void SetDeletionLabel(bool label = true)
+        {
+            Подія_Triggers.SetDeletionLabel(this, label);
+            ClearSpendTheDocument();
+            base.BaseDeletionLabel(label);
+        }
+
+        public void Delete()
+        {
+            Подія_Triggers.BeforeDelete(this);
+            ClearSpendTheDocument();
+            base.BaseDelete(new string[] {  });
+        }
+        
+        public Подія_Pointer GetDocumentPointer()
+        {
+            return new Подія_Pointer(UnigueID.UGuid);
+        }
+
+        public UuidAndText GetBasis()
+        {
+            return new UuidAndText(UnigueID.UGuid, "Документи.Подія");
+        }
+        
+        public string Назва { get; set; }
+        public DateTime ДатаДок { get; set; }
+        public string НомерДок { get; set; }
+        public string Коментар { get; set; }
+        
+    }
+    
+    public class Подія_Pointer : DocumentPointer
+    {
+        public Подія_Pointer(object? uid = null) : base(Config.Kernel!, "tab_a03", "Подія")
+        {
+            base.Init(new UnigueID(uid), null);
+        }
+        
+        public Подія_Pointer(UnigueID uid, Dictionary<string, object>? fields = null) : base(Config.Kernel!, "tab_a03", "Подія")
+        {
+            base.Init(uid, fields);
+        }
+
+        public string Назва { get; set; } = "";
+
+        public string GetPresentation()
+        {
+            return Назва = base.BasePresentation(
+              new string[] { "docname" }
+            );
+        }
+
+        public bool SpendTheDocument(DateTime spendDate)
+        {
+            Подія_Objest? obj = GetDocumentObject();
+            return (obj != null ? obj.SpendTheDocument(spendDate) : false);
+        }
+
+        public void ClearSpendTheDocument()
+        {
+            Подія_Objest? obj = GetDocumentObject();
+            if (obj != null) obj.ClearSpendTheDocument();
+        }
+
+        public void SetDeletionLabel(bool label = true)
+        {
+            Подія_Objest? obj = GetDocumentObject();
+                if (obj == null) return;
+                Подія_Triggers.SetDeletionLabel(obj, label);
+                
+                if (label)
+                {
+                    Подія_SpendTheDocument.ClearSpend(obj);
+                    BaseSpend(false, DateTime.MinValue);
+                }
+                
+            base.BaseDeletionLabel(label);
+        }
+
+        public Подія_Pointer Copy()
+        {
+            return new Подія_Pointer(base.UnigueID, base.Fields) { Назва = Назва };
+        }
+
+        public Подія_Pointer GetEmptyPointer()
+        {
+            return new Подія_Pointer();
+        }
+
+        public UuidAndText GetBasis()
+        {
+            return new UuidAndText(UnigueID.UGuid, "Документи.Подія");
+        }
+
+        public Подія_Objest? GetDocumentObject(bool readAllTablePart = false)
+        {
+            if (this.IsEmpty()) return null;
+            Подія_Objest ПодіяObjestItem = new Подія_Objest();
+            if (!ПодіяObjestItem.Read(base.UnigueID)) return null;
+            
+            return ПодіяObjestItem;
+        }
+
+        public void Clear()
+        {
+            Init(new UnigueID(), null);
+            Назва = "";
+        }
+    }
+
+    public class Подія_Select : DocumentSelect
+    {		
+        public Подія_Select() : base(Config.Kernel!, "tab_a03") { }
+        
+        public bool Select() { return base.BaseSelect(); }
+        
+        public bool SelectSingle() { if (base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
+        
+        public bool MoveNext() { if (MoveToPosition()) { Current = new Подія_Pointer(base.DocumentPointerPosition.UnigueID, base.DocumentPointerPosition.Fields); return true; } else { Current = null; return false; } }
+        
+        public Подія_Pointer? Current { get; private set; }
+    }
+
+      
+    
+    #endregion
+    
 }
 
 namespace StorageAndTrade_1_0.Журнали
@@ -874,8 +1192,8 @@ namespace StorageAndTrade_1_0.Журнали
     public class Journal_Select: JournalSelect
     {
         public Journal_Select() : base(Config.Kernel!,
-             new string[] { },
-			       new string[] { }) { }
+             new string[] { "tab_a03"},
+			       new string[] { "Подія"}) { }
 
         public DocumentObject? GetDocumentObject(bool readAllTablePart = true)
         {
