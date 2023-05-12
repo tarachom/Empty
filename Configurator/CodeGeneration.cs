@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 12.05.2023 16:32:25
+ * Дата конфігурації: 12.05.2023 16:48:56
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -655,10 +655,7 @@ namespace StorageAndTrade_1_0.Журнали
             if (Current == null)
                 return null;
 
-            switch (Current.TypeDocument)
-            {
-                
-            }
+            
 			
 			      return null;
         }
