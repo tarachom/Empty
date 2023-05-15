@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 12.05.2023 19:41:32
+ * Дата конфігурації: 15.05.2023 17:51:40
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -926,6 +926,15 @@ namespace StorageAndTrade_1_0.Документи
         public const string ДатаДок = "docdate";
         public const string НомерДок = "docnomer";
         public const string Коментар = "col_a1";
+        public const string Користувач = "col_a2";
+        public const string Блокнот = "col_a3";
+        public const string Період = "col_a4";
+        public const string Ціна = "col_a5";
+        public const string Сума = "col_a6";
+        public const string Заблоковано = "col_a7";
+        public const string ДатаДоставки = "col_a8";
+        public const string ЧасДоставки = "col_a9";
+        public const string ЗадаєтьсяКористувачем = "col_b1";
     }
 
     public static class Подія_Export
@@ -964,6 +973,66 @@ namespace StorageAndTrade_1_0.Документи
                 xmlWriter.WriteValue(obj.Коментар);
               
             xmlWriter.WriteEndElement(); //Коментар
+            xmlWriter.WriteStartElement("Користувач");
+            xmlWriter.WriteAttributeString("type", "pointer");
+            
+                    xmlWriter.WriteAttributeString("pointer", "Довідники.Користувачі");
+                    xmlWriter.WriteAttributeString("uid", obj.Користувач.UnigueID.ToString());
+                    xmlWriter.WriteString(obj.Користувач.GetPresentation());
+                  
+            xmlWriter.WriteEndElement(); //Користувач
+            xmlWriter.WriteStartElement("Блокнот");
+            xmlWriter.WriteAttributeString("type", "pointer");
+            
+                    xmlWriter.WriteAttributeString("pointer", "Довідники.Блокнот");
+                    xmlWriter.WriteAttributeString("uid", obj.Блокнот.UnigueID.ToString());
+                    xmlWriter.WriteString(obj.Блокнот.GetPresentation());
+                  
+            xmlWriter.WriteEndElement(); //Блокнот
+            xmlWriter.WriteStartElement("Період");
+            xmlWriter.WriteAttributeString("type", "enum");
+            
+                xmlWriter.WriteAttributeString("pointer", "Перелічення.ТипПеріодуДляЖурналівДокументів");
+                xmlWriter.WriteAttributeString("uid", ((int)obj.Період).ToString());
+                xmlWriter.WriteString(obj.Період.ToString());
+              
+            xmlWriter.WriteEndElement(); //Період
+            xmlWriter.WriteStartElement("Ціна");
+            xmlWriter.WriteAttributeString("type", "numeric");
+            
+                xmlWriter.WriteValue(obj.Ціна);
+              
+            xmlWriter.WriteEndElement(); //Ціна
+            xmlWriter.WriteStartElement("Сума");
+            xmlWriter.WriteAttributeString("type", "numeric");
+            
+                xmlWriter.WriteValue(obj.Сума);
+              
+            xmlWriter.WriteEndElement(); //Сума
+            xmlWriter.WriteStartElement("Заблоковано");
+            xmlWriter.WriteAttributeString("type", "boolean");
+            
+                xmlWriter.WriteValue(obj.Заблоковано);
+              
+            xmlWriter.WriteEndElement(); //Заблоковано
+            xmlWriter.WriteStartElement("ДатаДоставки");
+            xmlWriter.WriteAttributeString("type", "datetime");
+            
+                xmlWriter.WriteValue(obj.ДатаДоставки);
+              
+            xmlWriter.WriteEndElement(); //ДатаДоставки
+            xmlWriter.WriteStartElement("ЧасДоставки");
+            xmlWriter.WriteAttributeString("type", "time");
+            
+                xmlWriter.WriteValue(obj.ЧасДоставки);
+              
+            xmlWriter.WriteEndElement(); //ЧасДоставки
+            xmlWriter.WriteStartElement("ЗадаєтьсяКористувачем");
+            xmlWriter.WriteAttributeString("type", "composite_pointer");
+            
+                xmlWriter.WriteRaw(((UuidAndText)obj.ЗадаєтьсяКористувачем).ToXml());
+              
+            xmlWriter.WriteEndElement(); //ЗадаєтьсяКористувачем
 
             xmlWriter.WriteEndElement(); //root
             xmlWriter.WriteEndDocument();
@@ -974,12 +1043,21 @@ namespace StorageAndTrade_1_0.Документи
     public class Подія_Objest : DocumentObject
     {
         public Подія_Objest() : base(Config.Kernel!, "tab_a03", "Подія",
-             new string[] { "docname", "docdate", "docnomer", "col_a1" }) 
+             new string[] { "docname", "docdate", "docnomer", "col_a1", "col_a2", "col_a3", "col_a4", "col_a5", "col_a6", "col_a7", "col_a8", "col_a9", "col_b1" }) 
         {
             Назва = "";
             ДатаДок = DateTime.MinValue;
             НомерДок = "";
             Коментар = "";
+            Користувач = new Довідники.Користувачі_Pointer();
+            Блокнот = new Довідники.Блокнот_Pointer();
+            Період = 0;
+            Ціна = 0;
+            Сума = 0;
+            Заблоковано = false;
+            ДатаДоставки = DateTime.MinValue;
+            ЧасДоставки = DateTime.MinValue.TimeOfDay;
+            ЗадаєтьсяКористувачем = new UuidAndText();
             
         }
         
@@ -998,6 +1076,15 @@ namespace StorageAndTrade_1_0.Документи
                 ДатаДок = (base.FieldValue["docdate"] != DBNull.Value) ? DateTime.Parse(base.FieldValue["docdate"].ToString() ?? DateTime.MinValue.ToString()) : DateTime.MinValue;
                 НомерДок = base.FieldValue["docnomer"].ToString() ?? "";
                 Коментар = base.FieldValue["col_a1"].ToString() ?? "";
+                Користувач = new Довідники.Користувачі_Pointer(base.FieldValue["col_a2"]);
+                Блокнот = new Довідники.Блокнот_Pointer(base.FieldValue["col_a3"]);
+                Період = (base.FieldValue["col_a4"] != DBNull.Value) ? (Перелічення.ТипПеріодуДляЖурналівДокументів)base.FieldValue["col_a4"] : 0;
+                Ціна = (base.FieldValue["col_a5"] != DBNull.Value) ? (decimal)base.FieldValue["col_a5"] : 0;
+                Сума = (base.FieldValue["col_a6"] != DBNull.Value) ? (decimal)base.FieldValue["col_a6"] : 0;
+                Заблоковано = (base.FieldValue["col_a7"] != DBNull.Value) ? (bool)base.FieldValue["col_a7"] : false;
+                ДатаДоставки = (base.FieldValue["col_a8"] != DBNull.Value) ? DateTime.Parse(base.FieldValue["col_a8"].ToString() ?? DateTime.MinValue.ToString()) : DateTime.MinValue;
+                ЧасДоставки = (base.FieldValue["col_a9"] != DBNull.Value) ? TimeSpan.Parse(base.FieldValue["col_a9"]?.ToString() ?? DateTime.MinValue.TimeOfDay.ToString()) : DateTime.MinValue.TimeOfDay;
+                ЗадаєтьсяКористувачем = (base.FieldValue["col_b1"] != DBNull.Value) ? (UuidAndText)base.FieldValue["col_b1"] : new UuidAndText();
                 
                 BaseClear();
                 return true;
@@ -1013,6 +1100,15 @@ namespace StorageAndTrade_1_0.Документи
             base.FieldValue["docdate"] = ДатаДок;
             base.FieldValue["docnomer"] = НомерДок;
             base.FieldValue["col_a1"] = Коментар;
+            base.FieldValue["col_a2"] = Користувач.UnigueID.UGuid;
+            base.FieldValue["col_a3"] = Блокнот.UnigueID.UGuid;
+            base.FieldValue["col_a4"] = (int)Період;
+            base.FieldValue["col_a5"] = Ціна;
+            base.FieldValue["col_a6"] = Сума;
+            base.FieldValue["col_a7"] = Заблоковано;
+            base.FieldValue["col_a8"] = ДатаДоставки;
+            base.FieldValue["col_a9"] = ЧасДоставки;
+            base.FieldValue["col_b1"] = ЗадаєтьсяКористувачем;
             
             bool result = BaseSave();
             
@@ -1045,6 +1141,15 @@ namespace StorageAndTrade_1_0.Документи
             copy.ДатаДок = ДатаДок;
             copy.НомерДок = НомерДок;
             copy.Коментар = Коментар;
+            copy.Користувач = Користувач;
+            copy.Блокнот = Блокнот;
+            copy.Період = Період;
+            copy.Ціна = Ціна;
+            copy.Сума = Сума;
+            copy.Заблоковано = Заблоковано;
+            copy.ДатаДоставки = ДатаДоставки;
+            copy.ЧасДоставки = ЧасДоставки;
+            copy.ЗадаєтьсяКористувачем = ЗадаєтьсяКористувачем;
             
 
             if (copyTableParts)
@@ -1085,6 +1190,15 @@ namespace StorageAndTrade_1_0.Документи
         public DateTime ДатаДок { get; set; }
         public string НомерДок { get; set; }
         public string Коментар { get; set; }
+        public Довідники.Користувачі_Pointer Користувач { get; set; }
+        public Довідники.Блокнот_Pointer Блокнот { get; set; }
+        public Перелічення.ТипПеріодуДляЖурналівДокументів Період { get; set; }
+        public decimal Ціна { get; set; }
+        public decimal Сума { get; set; }
+        public bool Заблоковано { get; set; }
+        public DateTime ДатаДоставки { get; set; }
+        public TimeSpan ЧасДоставки { get; set; }
+        public UuidAndText ЗадаєтьсяКористувачем { get; set; }
         
     }
     
