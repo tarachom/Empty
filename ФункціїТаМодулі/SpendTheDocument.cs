@@ -52,29 +52,7 @@ namespace StorageAndTrade_1_0.Документи
         }
     }
 
-    class Подія_SpendTheDocument
-    {
-        public static bool Spend(Подія_Objest ДокументОбєкт)
-        {
-            try
-            {
-                // код проведення документу
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                СпільніФункції.ДокументНеПроводиться(ДокументОбєкт, ДокументОбєкт.Назва, ex.Message);
-                Подія_SpendTheDocument.ClearSpend(ДокументОбєкт);
-                return false;
-            }
-        }
-
-        public static void ClearSpend(Подія_Objest ДокументОбєкт)
-        {
-            // код очищення проводок
-        }
-    }
+    
 
 
 }
