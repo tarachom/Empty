@@ -96,10 +96,10 @@ namespace StorageAndTrade
                 <xsl:when test="Type = 'string'">
                      <xsl:choose>
                         <xsl:when test="Multiline = '1'">
-                            TextView <xsl:value-of select="Name"/> = new TextView();
+                    TextView <xsl:value-of select="Name"/> = new TextView();
                         </xsl:when>
                         <xsl:otherwise>
-                            Entry <xsl:value-of select="Name"/> = new Entry() { WidthRequest = 500 };
+                    Entry <xsl:value-of select="Name"/> = new Entry() { WidthRequest = 500 };
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
@@ -169,27 +169,28 @@ namespace StorageAndTrade
         protected override void CreatePack1(VBox vBox)
         {
             <xsl:for-each select="$Fields">
+                //<xsl:value-of select="Name"/>
                 <xsl:choose>
                     <xsl:when test="Type = 'string' or Type = 'integer' or Type = 'numeric' or Type = 'date' or Type = 'datetime' or Type = 'time'">
                         <xsl:choose>
                             <xsl:when test="Type = 'string' and Multiline = '1'">
-                                CreateFieldView(vBox, "<xsl:value-of select="Name"/>:", <xsl:value-of select="Name"/>, 500, 200);
+                CreateFieldView(vBox, "<xsl:value-of select="Name"/>:", <xsl:value-of select="Name"/>, 500, 200);
                             </xsl:when>
                             <xsl:otherwise>
-                                CreateField(vBox, "<xsl:value-of select="Name"/>:", <xsl:value-of select="Name"/>);
+                CreateField(vBox, "<xsl:value-of select="Name"/>:", <xsl:value-of select="Name"/>);
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:when>
                     <xsl:when test="Type = 'composite_pointer' or Type = 'boolean'">
-                        CreateField(vBox, null, <xsl:value-of select="Name"/>);
+                CreateField(vBox, null, <xsl:value-of select="Name"/>);
                     </xsl:when>
                     <xsl:when test="Type = 'pointer'">
                         <xsl:variable name="namePointer" select="substring-after(Pointer, '.')" />
-                        CreateField(vBox, null, <xsl:value-of select="$namePointer"/>);
+                CreateField(vBox, null, <xsl:value-of select="$namePointer"/>);
                     </xsl:when>
                     <xsl:when test="Type = 'enum'">
                         <xsl:variable name="namePointer" select="substring-after(Pointer, '.')" />
-                        CreateField(vBox, "<xsl:value-of select="Name"/>:", <xsl:value-of select="$namePointer"/>);
+                CreateField(vBox, "<xsl:value-of select="Name"/>:", <xsl:value-of select="$namePointer"/>);
                     </xsl:when>
                 </xsl:choose>
             </xsl:for-each>
@@ -254,9 +255,6 @@ namespace StorageAndTrade
 
         protected override void GetValue()
         {
-            UnigueID = <xsl:value-of select="$DirectoryName"/>_Objest.UnigueID;
-            Caption = Назва.Text;
-
             <xsl:for-each select="$Fields">
                 <xsl:choose>
                     <xsl:when test="Type = 'string'">
@@ -310,6 +308,9 @@ namespace StorageAndTrade
             <xsl:for-each select="$TabularParts">
                 <xsl:value-of select="Name"/>.SaveRecords();
             </xsl:for-each>
+
+            UnigueID = <xsl:value-of select="$DirectoryName"/>_Objest.UnigueID;
+            Caption = Назва.Text;
         }
     }
 }
