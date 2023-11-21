@@ -171,11 +171,11 @@ namespace StorageAndTrade
         /// Функція обробки перед збереження та після збереження
         /// </summary>
         /// <param name="closePage"></param>
-        void BeforeAndAfterSave(bool closePage = false)
+        async void BeforeAndAfterSave(bool closePage = false)
         {
             GetValue();
 
-            Save();
+            await Save();
 
             if (CallBack_LoadRecords != null)
                 CallBack_LoadRecords.Invoke(UnigueID);
@@ -189,15 +189,15 @@ namespace StorageAndTrade
         /// <summary>
         /// Збереження
         /// </summary>
-        protected virtual void Save() { }
+        protected virtual ValueTask Save() { return new ValueTask(); }
 
         /// <summary>
         /// Записати повідомлення про помилку і вивести меседж
         /// </summary>
         /// <param name="ex">Помилка</param>
-        protected void MsgError(Exception ex)
+        protected async void MsgError(Exception ex)
         {
-            ФункціїДляПовідомлень.ДодатиПовідомленняПроПомилку(DateTime.Now, "Запис", UnigueID?.UGuid, "Регістри Відомостей", Caption, ex.Message);
+            await ФункціїДляПовідомлень.ДодатиПовідомленняПроПомилку(DateTime.Now, "Запис", UnigueID?.UGuid, "Регістри Відомостей", Caption, ex.Message);
             ФункціїДляПовідомлень.ВідкритиТермінал();
 
             Message.Info(Program.GeneralForm, "Не вдалось записати");

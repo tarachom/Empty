@@ -21,14 +21,14 @@ namespace StorageAndTrade
 
         #region Override
 
-        public override void LoadRecords()
+        public override async ValueTask LoadRecords()
         {
             ТабличніСписки.Користувачі_Записи.SelectPointerItem = SelectPointerItem;
             ТабличніСписки.Користувачі_Записи.DirectoryPointerItem = DirectoryPointerItem;
 
             ТабличніСписки.Користувачі_Записи.Where.Clear();
 
-            ТабличніСписки.Користувачі_Записи.LoadRecords();
+            await ТабличніСписки.Користувачі_Записи.LoadRecords();
 
             if (ТабличніСписки.Користувачі_Записи.SelectPath != null)
                 TreeViewGrid.SetCursor(ТабличніСписки.Користувачі_Записи.SelectPath, TreeViewGrid.Columns[0], false);
@@ -36,7 +36,7 @@ namespace StorageAndTrade
             TreeViewGrid.GrabFocus();
         }
 
-        protected override void LoadRecords_OnSearch(string searchText)
+        protected override async ValueTask LoadRecords_OnSearch(string searchText)
         {
             searchText = searchText.ToLower().Trim();
 
@@ -51,13 +51,13 @@ namespace StorageAndTrade
             ТабличніСписки.Користувачі_Записи.Where.Add(
                 new Where(Користувачі_Const.Назва, Comparison.LIKE, searchText) { FuncToField = "LOWER" });
 
-            ТабличніСписки.Користувачі_Записи.LoadRecords();
+            await ТабличніСписки.Користувачі_Записи.LoadRecords();
 
             if (ТабличніСписки.Користувачі_Записи.FirstPath != null)
                 TreeViewGrid.SetCursor(ТабличніСписки.Користувачі_Записи.FirstPath, TreeViewGrid.Columns[0], false);
         }
 
-        protected override void OpenPageElement(bool IsNew, UnigueID? unigueID = null)
+        protected override async void OpenPageElement(bool IsNew, UnigueID? unigueID = null)
         {
             if (IsNew)
             {
@@ -77,7 +77,7 @@ namespace StorageAndTrade
             else if (unigueID != null)
             {
                 Користувачі_Objest Користувачі_Objest = new Користувачі_Objest();
-                if (Користувачі_Objest.Read(unigueID))
+                if (await Користувачі_Objest.Read(unigueID))
                 {
                     Program.GeneralForm?.CreateNotebookPage($"{Користувачі_Objest.Назва}", () =>
                     {
@@ -98,22 +98,22 @@ namespace StorageAndTrade
             }
         }
 
-        protected override void SetDeletionLabel(UnigueID unigueID)
+        protected override async ValueTask SetDeletionLabel(UnigueID unigueID)
         {
             Користувачі_Objest Користувачі_Objest = new Користувачі_Objest();
-            if (Користувачі_Objest.Read(unigueID))
-                Користувачі_Objest.SetDeletionLabel(!Користувачі_Objest.DeletionLabel);
+            if (await Користувачі_Objest.Read(unigueID))
+                await Користувачі_Objest.SetDeletionLabel(!Користувачі_Objest.DeletionLabel);
             else
                 Message.Error(Program.GeneralForm, "Не вдалось прочитати!");
         }
 
-        protected override UnigueID? Copy(UnigueID unigueID)
+        protected override async ValueTask<UnigueID?> Copy(UnigueID unigueID)
         {
             Користувачі_Objest Користувачі_Objest = new Користувачі_Objest();
-            if (Користувачі_Objest.Read(unigueID))
+            if (await Користувачі_Objest.Read(unigueID))
             {
-                Користувачі_Objest Користувачі_Objest_Новий = Користувачі_Objest.Copy(true);
-                Користувачі_Objest_Новий.Save();
+                Користувачі_Objest Користувачі_Objest_Новий = await Користувачі_Objest.Copy(true);
+                await Користувачі_Objest_Новий.Save();
 
                 return Користувачі_Objest_Новий.UnigueID;
             }
@@ -127,4 +127,3 @@ namespace StorageAndTrade
         #endregion
     }
 }
-    

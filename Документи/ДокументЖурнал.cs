@@ -85,7 +85,7 @@ namespace StorageAndTrade
         {
             if (PeriodWhere != 0)
                 ComboBoxPeriodWhere.ActiveId = PeriodWhere.ToString();
-            else if ((int)Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const != 0)
+            else if (Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const != 0)
                 ComboBoxPeriodWhere.ActiveId = Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const.ToString();
         }
 
@@ -116,8 +116,10 @@ namespace StorageAndTrade
             ToolbarTop.Add(refreshButton);
 
             //Separator
-            ToolItem toolItemSeparator = new ToolItem();
-            toolItemSeparator.Add(new Separator(Orientation.Horizontal));
+            ToolItem toolItemSeparator = new ToolItem
+            {
+                new Separator(Orientation.Horizontal)
+            };
             ToolbarTop.Add(toolItemSeparator);
 
             MenuToolButton provodkyButton = new MenuToolButton(Stock.Find) { Label = "Проводки", IsImportant = true };
@@ -129,19 +131,19 @@ namespace StorageAndTrade
             if (menuItem != null)
             {
                 MenuToolButton naOsnoviButton = new MenuToolButton(Stock.New) { Label = "Ввести на основі", IsImportant = true };
-                naOsnoviButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)(MenuToolButton)sender!).Menu).Popup(); };
+                naOsnoviButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
                 naOsnoviButton.Menu = menuItem;
                 ToolbarTop.Add(naOsnoviButton);
             }
 
             MenuToolButton printingButton = new MenuToolButton(Stock.Print) { TooltipText = "Друк" };
-            printingButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)(MenuToolButton)sender!).Menu).Popup(); };
+            printingButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
             printingButton.Menu = ToolbarPrintingSubMenu();
             ToolbarTop.Add(printingButton);
 
             //Експорт
             MenuToolButton exportButton = new MenuToolButton(Stock.Convert) { Label = "Експорт", IsImportant = true };
-            exportButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)(MenuToolButton)sender!).Menu).Popup(); };
+            exportButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
             exportButton.Menu = ToolbarExportSubMenu();
             ToolbarTop.Add(exportButton);
         }
@@ -222,19 +224,19 @@ namespace StorageAndTrade
 
         protected virtual void OpenPageElement(bool IsNew, UnigueID? unigueID = null) { }
 
-        protected virtual void SetDeletionLabel(UnigueID unigueID) { }
+        protected virtual ValueTask SetDeletionLabel(UnigueID unigueID) { return new ValueTask(); }
 
-        protected virtual UnigueID? Copy(UnigueID unigueID) { return null; }
+        protected virtual ValueTask<UnigueID?> Copy(UnigueID unigueID) { return new ValueTask<UnigueID?>(); }
 
         public virtual void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
             LoadRecords();
         }
-        
+
         protected virtual void PeriodWhereChanged() { }
 
-        protected virtual void SpendTheDocument(UnigueID unigueID, bool spendDoc) { }
+        protected virtual ValueTask SpendTheDocument(UnigueID unigueID, bool spendDoc) { return new ValueTask(); }
 
         protected virtual DocumentPointer? ReportSpendTheDocument(UnigueID unigueID) { return null; }
 
@@ -361,7 +363,7 @@ namespace StorageAndTrade
             LoadRecords();
         }
 
-        void OnDeleteClick(object? sender, EventArgs args)
+        async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -376,7 +378,7 @@ namespace StorageAndTrade
 
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                        SetDeletionLabel(unigueID);
+                        await SetDeletionLabel(unigueID);
 
                         SelectPointerItem = unigueID;
                     }
@@ -386,7 +388,7 @@ namespace StorageAndTrade
             }
         }
 
-        void OnCopyClick(object? sender, EventArgs args)
+        async void OnCopyClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -401,7 +403,7 @@ namespace StorageAndTrade
 
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                        UnigueID? newUnigueID = Copy(unigueID);
+                        UnigueID? newUnigueID = await Copy(unigueID);
 
                         if (newUnigueID != null)
                             SelectPointerItem = newUnigueID;
@@ -439,7 +441,7 @@ namespace StorageAndTrade
             }
         }
 
-        void SpendTheDocumentOrClear(bool spend)
+        async void SpendTheDocumentOrClear(bool spend)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -452,7 +454,7 @@ namespace StorageAndTrade
 
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                    SpendTheDocument(unigueID, spend);
+                    await SpendTheDocument(unigueID, spend);
 
                     SelectPointerItem = unigueID;
                 }

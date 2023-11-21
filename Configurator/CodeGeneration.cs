@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 16.05.2023 08:31:22
+ * Дата конфігурації: 21.11.2023 14:07:46
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -43,61 +43,67 @@ namespace StorageAndTrade_1_0
     {
         public static Kernel? Kernel { get; set; }
 		
-        public static void ReadAllConstants()
+        public static async ValueTask ReadAllConstants()
         {
-            Константи.Системні.ReadAll();
-            Константи.ЖурналиДокументів.ReadAll();
-            Константи.ПриЗапускуПрограми.ReadAll();
-            Константи.НумераціяДовідників.ReadAll();
-            Константи.НумераціяДокументів.ReadAll();
+            await Константи.Системні.ReadAll();
+            await Константи.ЖурналиДокументів.ReadAll();
+            await Константи.ПриЗапускуПрограми.ReadAll();
+            await Константи.НумераціяДовідників.ReadAll();
+            await Константи.НумераціяДокументів.ReadAll();
             
         }
     }
 
     public class Functions
     {
+        public record CompositePointerPresentation_Record
+        {
+            public string result = "";
+            public string pointer = "";
+            public string type = "";
+        }
         /*
           Функція для типу який задається користувачем.
           Повертає презентацію для uuidAndText.
           В @pointer - повертає групу (Документи або Довідники)
             @type - повертає назву типу
         */
-        public static string CompositePointerPresentation(UuidAndText uuidAndText, out string pointer, out string type)
+        public static async ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText)
         {
-            pointer = type = "";
+            CompositePointerPresentation_Record record = new();
 
             if (uuidAndText.IsEmpty() || String.IsNullOrEmpty(uuidAndText.Text) || uuidAndText.Text.IndexOf(".") == -1)
-                return "";
+                return record;
 
             string[] pointer_and_type = uuidAndText.Text.Split(".", StringSplitOptions.None);
 
             if (pointer_and_type.Length == 2)
             {
-                pointer = pointer_and_type[0];
-                type = pointer_and_type[1];
+                record.pointer = pointer_and_type[0];
+                record.type = pointer_and_type[1];
 
-                if (pointer == "Документи")
+                if (record.pointer == "Документи")
                 {
                     
-                    return "";
+                    return record;
                     
                 }
-                else if (pointer == "Довідники")
+                else if (record.pointer == "Довідники")
                 {
                     
-                    switch (type)
+                    switch (record.type)
                     {
                         
-                        case "Користувачі": return new Довідники.Користувачі_Pointer(uuidAndText.Uuid).GetPresentation();
+                        case "Користувачі": record.result = await new Довідники.Користувачі_Pointer(uuidAndText.Uuid).GetPresentation(); return record;
                         
-                        case "Блокнот": return new Довідники.Блокнот_Pointer(uuidAndText.Uuid).GetPresentation();
+                        case "Блокнот": record.result = await new Довідники.Блокнот_Pointer(uuidAndText.Uuid).GetPresentation(); return record;
                         
                     }
                     
                 }
             }
 
-            return "";
+            return record;
         }
     }
 }
@@ -108,11 +114,11 @@ namespace StorageAndTrade_1_0.Константи
 	  #region CONSTANTS BLOCK "Системні"
     public static class Системні
     {
-        public static void ReadAll()
+        public static async ValueTask ReadAll()
         {
             
             Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-            bool IsSelect = Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
+            bool IsSelect = await Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
                  new string[] { "col_a2", "col_a9" }, fieldValue);
             
             if (IsSelect)
@@ -172,10 +178,10 @@ namespace StorageAndTrade_1_0.Константи
             public const string Повідомлення = "col_a6";
             public List<Record> Records { get; set; }
         
-            public void Read()
+            public async ValueTask Read()
             {
                 Records.Clear();
-                base.BaseRead();
+                await base.BaseRead();
 
                 foreach (Dictionary<string, object> fieldValue in base.FieldValueList) 
                 {
@@ -195,12 +201,12 @@ namespace StorageAndTrade_1_0.Константи
                 base.BaseClear();
             }
         
-            public void Save(bool clear_all_before_save /*= true*/) 
+            public async ValueTask Save(bool clear_all_before_save /*= true*/) 
             {
-                base.BaseBeginTransaction();
+                await base.BaseBeginTransaction();
                 
                 if (clear_all_before_save)
-                    base.BaseDelete();
+                    await base.BaseDelete();
 
                 foreach (Record record in Records)
                 {
@@ -213,15 +219,15 @@ namespace StorageAndTrade_1_0.Константи
                     fieldValue.Add("col_a5", record.НазваОбєкту);
                     fieldValue.Add("col_a6", record.Повідомлення);
                     
-                    record.UID = base.BaseSave(record.UID, fieldValue);
+                    record.UID = await base.BaseSave(record.UID, fieldValue);
                 }
                 
-                base.BaseCommitTransaction();
+                await base.BaseCommitTransaction();
             }
         
-            public void Delete()
+            public async ValueTask Delete()
             {
-                base.BaseDelete();
+                await base.BaseDelete();
             }
             
             public class Record : ConstantsTablePartRecord
@@ -242,11 +248,11 @@ namespace StorageAndTrade_1_0.Константи
 	  #region CONSTANTS BLOCK "ЖурналиДокументів"
     public static class ЖурналиДокументів
     {
-        public static void ReadAll()
+        public static async ValueTask ReadAll()
         {
             
             Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-            bool IsSelect = Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
+            bool IsSelect = await Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
                  new string[] { "col_a8" }, fieldValue);
             
             if (IsSelect)
@@ -278,7 +284,7 @@ namespace StorageAndTrade_1_0.Константи
 	  #region CONSTANTS BLOCK "ПриЗапускуПрограми"
     public static class ПриЗапускуПрограми
     {
-        public static void ReadAll()
+        public static async ValueTask ReadAll()
         {
             
         }
@@ -290,11 +296,11 @@ namespace StorageAndTrade_1_0.Константи
 	  #region CONSTANTS BLOCK "НумераціяДовідників"
     public static class НумераціяДовідників
     {
-        public static void ReadAll()
+        public static async ValueTask ReadAll()
         {
             
             Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-            bool IsSelect = Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
+            bool IsSelect = await Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
                  new string[] { "col_a1", "col_a3" }, fieldValue);
             
             if (IsSelect)
@@ -341,7 +347,7 @@ namespace StorageAndTrade_1_0.Константи
 	  #region CONSTANTS BLOCK "НумераціяДокументів"
     public static class НумераціяДокументів
     {
-        public static void ReadAll()
+        public static async ValueTask ReadAll()
         {
             
         }
@@ -358,8 +364,9 @@ namespace StorageAndTrade_1_0.Довідники
     #region DIRECTORY "Користувачі"
     public static class Користувачі_Const
     {
-        public const string FULLNAME = "Користувачі";
         public const string TABLE = "tab_a08";
+        public const string POINTER = "Довідники.Користувачі";
+        public const string FULLNAME = "Користувачі";
         public const string DELETION_LABEL = "deletion_label";
         
         public const string Код = "col_a1";
@@ -389,9 +396,9 @@ namespace StorageAndTrade_1_0.Довідники
             
         }
 
-        public bool Read(UnigueID uid)
+        public async ValueTask<bool> Read(UnigueID uid)
         {
-            if (BaseRead(uid))
+            if (await BaseRead(uid))
             {
                 Код = base.FieldValue["col_a1"].ToString() ?? "";
                 Назва = base.FieldValue["col_a2"].ToString() ?? "";
@@ -406,7 +413,7 @@ namespace StorageAndTrade_1_0.Довідники
                 return false;
         }
         
-        public bool Save()
+        public async ValueTask<bool> Save()
         {
             Користувачі_Triggers.BeforeSave(this);
             base.FieldValue["col_a1"] = Код;
@@ -415,16 +422,16 @@ namespace StorageAndTrade_1_0.Довідники
             base.FieldValue["col_a4"] = Коментар;
             base.FieldValue["col_a5"] = Заблокований;
             
-            bool result = BaseSave();
+            bool result = await BaseSave();
             if (result)
             {
                 Користувачі_Triggers.AfterSave(this);
-                BaseWriteFullTextSearch(GetBasis(), new string[] {  });
+                await BaseWriteFullTextSearch(GetBasis(), new string[] {  });
             }
             return result;
         }
 
-        public Користувачі_Objest Copy(bool copyTableParts = false)
+        public async ValueTask<Користувачі_Objest> Copy(bool copyTableParts = false)
         {
             Користувачі_Objest copy = new Користувачі_Objest();
             copy.Код = Код;
@@ -433,27 +440,26 @@ namespace StorageAndTrade_1_0.Довідники
             copy.Коментар = Коментар;
             copy.Заблокований = Заблокований;
             
-            
-            if (copyTableParts)
-            {
-            
-            }
 
             copy.New();
-            Користувачі_Triggers.Copying(copy, this);
+            
+                await Користувачі_Triggers.Copying(copy, this);
             return copy;
+                
         }
 
-        public void SetDeletionLabel(bool label = true)
+        public async ValueTask SetDeletionLabel(bool label = true)
         {
-            Користувачі_Triggers.SetDeletionLabel(this, label);
-            base.BaseDeletionLabel(label);
+            
+                await Користувачі_Triggers.SetDeletionLabel(this, label);
+            await base.BaseDeletionLabel(label);
         }
 
-        public void Delete()
+        public async ValueTask Delete()
         {
-            Користувачі_Triggers.BeforeDelete(this);
-            base.BaseDelete(new string[] {  });
+            
+                await Користувачі_Triggers.BeforeDelete(this);
+            await base.BaseDelete(new string[] {  });
         }
         
         public Користувачі_Pointer GetDirectoryPointer()
@@ -463,12 +469,12 @@ namespace StorageAndTrade_1_0.Довідники
 
         public UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID.UGuid, "Довідники.Користувачі");
+            return new UuidAndText(UnigueID.UGuid, Користувачі_Const.POINTER);
         }
 
-        public string GetPresentation()
+        public async ValueTask<string> GetPresentation()
         {
-            return base.BasePresentation(
+            return await base.BasePresentation(
                 new string[] { "col_a2" }
             );
         }
@@ -493,11 +499,11 @@ namespace StorageAndTrade_1_0.Довідники
             base.Init(uid, fields);
         }
         
-        public Користувачі_Objest? GetDirectoryObject()
+        public async ValueTask<Користувачі_Objest?> GetDirectoryObject()
         {
             if (this.IsEmpty()) return null;
             Користувачі_Objest КористувачіObjestItem = new Користувачі_Objest();
-            return КористувачіObjestItem.Read(base.UnigueID) ? КористувачіObjestItem : null;
+            return await КористувачіObjestItem.Read(base.UnigueID) ? КористувачіObjestItem : null;
         }
 
         public Користувачі_Pointer Copy()
@@ -507,21 +513,22 @@ namespace StorageAndTrade_1_0.Довідники
 
         public string Назва { get; set; } = "";
 
-        public string GetPresentation()
+        public async ValueTask<string> GetPresentation()
         {
-            return Назва = base.BasePresentation(
+            return Назва = await base.BasePresentation(
                 new string[] { "col_a2" }
             );
         }
 
-        public void SetDeletionLabel(bool label = true)
+        public async ValueTask SetDeletionLabel(bool label = true)
         {
-            Користувачі_Objest? obj = GetDirectoryObject();
+            Користувачі_Objest? obj = await GetDirectoryObject();
             if (obj != null)
             {
-                Користувачі_Triggers.SetDeletionLabel(obj, label);
                 
-                base.BaseDeletionLabel(label);
+                    await Користувачі_Triggers.SetDeletionLabel(obj, label);
+                
+                await base.BaseDeletionLabel(label);
             }
         }
 		
@@ -532,7 +539,7 @@ namespace StorageAndTrade_1_0.Довідники
 
         public UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID.UGuid, "Довідники.Користувачі");
+            return new UuidAndText(UnigueID.UGuid, Користувачі_Const.POINTER);
         }
 
         public void Clear()
@@ -545,26 +552,26 @@ namespace StorageAndTrade_1_0.Довідники
     public class Користувачі_Select : DirectorySelect
     {
         public Користувачі_Select() : base(Config.Kernel!, "tab_a08") { }        
-        public bool Select() { return base.BaseSelect(); }
+        public async ValueTask<bool> Select() { return await base.BaseSelect(); }
         
-        public bool SelectSingle() { if (base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
+        public async ValueTask<bool> SelectSingle() { if (await base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
         
         public bool MoveNext() { if (MoveToPosition()) { Current = new Користувачі_Pointer(base.DirectoryPointerPosition.UnigueID, base.DirectoryPointerPosition.Fields); return true; } else { Current = null; return false; } }
 
         public Користувачі_Pointer? Current { get; private set; }
         
-        public Користувачі_Pointer FindByField(string name, object value)
+        public async ValueTask<Користувачі_Pointer> FindByField(string name, object value)
         {
             Користувачі_Pointer itemPointer = new Користувачі_Pointer();
-            DirectoryPointer directoryPointer = base.BaseFindByField(name, value);
+            DirectoryPointer directoryPointer = await base.BaseFindByField(name, value);
             if (!directoryPointer.IsEmpty()) itemPointer.Init(directoryPointer.UnigueID);
             return itemPointer;
         }
         
-        public List<Користувачі_Pointer> FindListByField(string name, object value, int limit = 0, int offset = 0)
+        public async ValueTask<List<Користувачі_Pointer>> FindListByField(string name, object value, int limit = 0, int offset = 0)
         {
             List<Користувачі_Pointer> directoryPointerList = new List<Користувачі_Pointer>();
-            foreach (DirectoryPointer directoryPointer in base.BaseFindListByField(name, value, limit, offset)) 
+            foreach (DirectoryPointer directoryPointer in await base.BaseFindListByField(name, value, limit, offset)) 
                 directoryPointerList.Add(new Користувачі_Pointer(directoryPointer.UnigueID));
             return directoryPointerList;
         }
@@ -577,8 +584,9 @@ namespace StorageAndTrade_1_0.Довідники
     #region DIRECTORY "Блокнот"
     public static class Блокнот_Const
     {
-        public const string FULLNAME = "Блокнот";
         public const string TABLE = "tab_a01";
+        public const string POINTER = "Довідники.Блокнот";
+        public const string FULLNAME = "Блокнот";
         public const string DELETION_LABEL = "deletion_label";
         
         public const string Код = "col_a1";
@@ -604,9 +612,9 @@ namespace StorageAndTrade_1_0.Довідники
             
         }
 
-        public bool Read(UnigueID uid)
+        public async ValueTask<bool> Read(UnigueID uid)
         {
-            if (BaseRead(uid))
+            if (await BaseRead(uid))
             {
                 Код = base.FieldValue["col_a1"].ToString() ?? "";
                 Назва = base.FieldValue["col_a2"].ToString() ?? "";
@@ -619,50 +627,49 @@ namespace StorageAndTrade_1_0.Довідники
                 return false;
         }
         
-        public bool Save()
+        public async ValueTask<bool> Save()
         {
             Блокнот_Triggers.BeforeSave(this);
             base.FieldValue["col_a1"] = Код;
             base.FieldValue["col_a2"] = Назва;
             base.FieldValue["col_a3"] = Запис;
             
-            bool result = BaseSave();
+            bool result = await BaseSave();
             if (result)
             {
                 Блокнот_Triggers.AfterSave(this);
-                BaseWriteFullTextSearch(GetBasis(), new string[] { Запис });
+                await BaseWriteFullTextSearch(GetBasis(), new string[] { Запис });
             }
             return result;
         }
 
-        public Блокнот_Objest Copy(bool copyTableParts = false)
+        public async ValueTask<Блокнот_Objest> Copy(bool copyTableParts = false)
         {
             Блокнот_Objest copy = new Блокнот_Objest();
             copy.Код = Код;
             copy.Назва = Назва;
             copy.Запис = Запис;
             
-            
-            if (copyTableParts)
-            {
-            
-            }
 
             copy.New();
-            Блокнот_Triggers.Copying(copy, this);
+            
+                await Блокнот_Triggers.Copying(copy, this);
             return copy;
+                
         }
 
-        public void SetDeletionLabel(bool label = true)
+        public async ValueTask SetDeletionLabel(bool label = true)
         {
-            Блокнот_Triggers.SetDeletionLabel(this, label);
-            base.BaseDeletionLabel(label);
+            
+                await Блокнот_Triggers.SetDeletionLabel(this, label);
+            await base.BaseDeletionLabel(label);
         }
 
-        public void Delete()
+        public async ValueTask Delete()
         {
-            Блокнот_Triggers.BeforeDelete(this);
-            base.BaseDelete(new string[] {  });
+            
+                await Блокнот_Triggers.BeforeDelete(this);
+            await base.BaseDelete(new string[] {  });
         }
         
         public Блокнот_Pointer GetDirectoryPointer()
@@ -672,12 +679,12 @@ namespace StorageAndTrade_1_0.Довідники
 
         public UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID.UGuid, "Довідники.Блокнот");
+            return new UuidAndText(UnigueID.UGuid, Блокнот_Const.POINTER);
         }
 
-        public string GetPresentation()
+        public async ValueTask<string> GetPresentation()
         {
-            return base.BasePresentation(
+            return await base.BasePresentation(
                 new string[] { "col_a2" }
             );
         }
@@ -700,11 +707,11 @@ namespace StorageAndTrade_1_0.Довідники
             base.Init(uid, fields);
         }
         
-        public Блокнот_Objest? GetDirectoryObject()
+        public async ValueTask<Блокнот_Objest?> GetDirectoryObject()
         {
             if (this.IsEmpty()) return null;
             Блокнот_Objest БлокнотObjestItem = new Блокнот_Objest();
-            return БлокнотObjestItem.Read(base.UnigueID) ? БлокнотObjestItem : null;
+            return await БлокнотObjestItem.Read(base.UnigueID) ? БлокнотObjestItem : null;
         }
 
         public Блокнот_Pointer Copy()
@@ -714,21 +721,22 @@ namespace StorageAndTrade_1_0.Довідники
 
         public string Назва { get; set; } = "";
 
-        public string GetPresentation()
+        public async ValueTask<string> GetPresentation()
         {
-            return Назва = base.BasePresentation(
+            return Назва = await base.BasePresentation(
                 new string[] { "col_a2" }
             );
         }
 
-        public void SetDeletionLabel(bool label = true)
+        public async ValueTask SetDeletionLabel(bool label = true)
         {
-            Блокнот_Objest? obj = GetDirectoryObject();
+            Блокнот_Objest? obj = await GetDirectoryObject();
             if (obj != null)
             {
-                Блокнот_Triggers.SetDeletionLabel(obj, label);
                 
-                base.BaseDeletionLabel(label);
+                    await Блокнот_Triggers.SetDeletionLabel(obj, label);
+                
+                await base.BaseDeletionLabel(label);
             }
         }
 		
@@ -739,7 +747,7 @@ namespace StorageAndTrade_1_0.Довідники
 
         public UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID.UGuid, "Довідники.Блокнот");
+            return new UuidAndText(UnigueID.UGuid, Блокнот_Const.POINTER);
         }
 
         public void Clear()
@@ -752,26 +760,26 @@ namespace StorageAndTrade_1_0.Довідники
     public class Блокнот_Select : DirectorySelect
     {
         public Блокнот_Select() : base(Config.Kernel!, "tab_a01") { }        
-        public bool Select() { return base.BaseSelect(); }
+        public async ValueTask<bool> Select() { return await base.BaseSelect(); }
         
-        public bool SelectSingle() { if (base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
+        public async ValueTask<bool> SelectSingle() { if (await base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
         
         public bool MoveNext() { if (MoveToPosition()) { Current = new Блокнот_Pointer(base.DirectoryPointerPosition.UnigueID, base.DirectoryPointerPosition.Fields); return true; } else { Current = null; return false; } }
 
         public Блокнот_Pointer? Current { get; private set; }
         
-        public Блокнот_Pointer FindByField(string name, object value)
+        public async ValueTask<Блокнот_Pointer> FindByField(string name, object value)
         {
             Блокнот_Pointer itemPointer = new Блокнот_Pointer();
-            DirectoryPointer directoryPointer = base.BaseFindByField(name, value);
+            DirectoryPointer directoryPointer = await base.BaseFindByField(name, value);
             if (!directoryPointer.IsEmpty()) itemPointer.Init(directoryPointer.UnigueID);
             return itemPointer;
         }
         
-        public List<Блокнот_Pointer> FindListByField(string name, object value, int limit = 0, int offset = 0)
+        public async ValueTask<List<Блокнот_Pointer>> FindListByField(string name, object value, int limit = 0, int offset = 0)
         {
             List<Блокнот_Pointer> directoryPointerList = new List<Блокнот_Pointer>();
-            foreach (DirectoryPointer directoryPointer in base.BaseFindListByField(name, value, limit, offset)) 
+            foreach (DirectoryPointer directoryPointer in await base.BaseFindListByField(name, value, limit, offset)) 
                 directoryPointerList.Add(new Блокнот_Pointer(directoryPointer.UnigueID));
             return directoryPointerList;
         }
@@ -896,14 +904,16 @@ namespace StorageAndTrade_1_0.Журнали
              new string[] { },
 			       new string[] { }) { }
 
-        public DocumentObject? GetDocumentObject(bool readAllTablePart = true)
+        public async ValueTask<DocumentObject?> GetDocumentObject(bool readAllTablePart = true)
         {
             if (Current == null)
                 return null;
 
-            
-			
-			      return null;
+            switch (Current.TypeDocument)
+            {
+                
+                default: return null;
+            }
         }
     }
     #endregion
@@ -926,14 +936,16 @@ namespace StorageAndTrade_1_0.РегістриНакопичення
         }
 
         /* Функція для обчислення віртуальних таблиць  */
-        public static void Execute(DateTime period, string regAccumName)
+        public static async void Execute(DateTime period, string regAccumName)
         {
+            if (Config.Kernel == null) return;
             
         }
 
         /* Функція для обчислення підсумкових віртуальних таблиць */
-        public static void ExecuteFinalCalculation(List<string> regAccumNameList)
+        public static async void ExecuteFinalCalculation(List<string> regAccumNameList)
         {
+            if (Config.Kernel == null) return;
             
         }
     }

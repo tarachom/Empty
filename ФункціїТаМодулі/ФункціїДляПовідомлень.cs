@@ -29,12 +29,13 @@ limitations under the License.
 
 using Конфа = StorageAndTrade_1_0;
 using StorageAndTrade_1_0.Константи;
+using AccountingSoftware;
 
 namespace StorageAndTrade
 {
     class ФункціїДляПовідомлень
     {
-        public static void ДодатиПовідомленняПроПомилку(DateTime Дата, string НазваПроцесу, Guid? Обєкт, string ТипОбєкту, string НазваОбєкту, string Повідомлення)
+        public static async ValueTask ДодатиПовідомленняПроПомилку(DateTime Дата, string НазваПроцесу, Guid? Обєкт, string ТипОбєкту, string НазваОбєкту, string Повідомлення)
         {
             Системні.ПовідомленняТаПомилки_Помилки_TablePart повідомленняТаПомилки_Помилки_TablePart =
                 new Системні.ПовідомленняТаПомилки_Помилки_TablePart();
@@ -44,23 +45,23 @@ namespace StorageAndTrade
 
             record.Дата = DateTime.Now;
             record.НазваПроцесу = НазваПроцесу;
-            record.Обєкт = (Обєкт != null ? (Guid)Обєкт : Guid.Empty);
+            record.Обєкт = Обєкт != null ? (Guid)Обєкт : Guid.Empty;
             record.ТипОбєкту = ТипОбєкту;
             record.НазваОбєкту = НазваОбєкту;
             record.Повідомлення = Повідомлення;
 
-            повідомленняТаПомилки_Помилки_TablePart.Save(false);
+            await повідомленняТаПомилки_Помилки_TablePart.Save(false);
         }
 
-        public static void ОчиститиПовідомлення()
+        public static async ValueTask ОчиститиПовідомлення()
         {
             string query = $@"
 DELETE FROM {Системні.ПовідомленняТаПомилки_Помилки_TablePart.TABLE}";
 
-            Конфа.Config.Kernel!.DataBase.ExecuteSQL(query);
+            await Конфа.Config.Kernel!.DataBase.ExecuteSQL(query);
         }
 
-        public static List<Dictionary<string, object>> ПрочитатиПовідомленняПроПомилку()
+        public static async ValueTask<SelectRequestAsync_Record> ПрочитатиПовідомленняПроПомилку()
         {
             string query = $@"
 SELECT
@@ -74,25 +75,15 @@ FROM
     {Системні.ПовідомленняТаПомилки_Помилки_TablePart.TABLE} AS Помилки
 ORDER BY Дата DESC
 ";
-
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-
-            string[] columnsName;
-            List<Dictionary<string, object>> listRow;
-
-            Конфа.Config.Kernel!.DataBase.SelectRequest(query, paramQuery, out columnsName, out listRow);
-
-            return listRow;
+            return await Конфа.Config.Kernel!.DataBase.SelectRequestAsync(query);
         }
 
-        public static void ВідкритиТермінал()
+        public static async void ВідкритиТермінал()
         {
-            Program.GeneralForm?.CreateNotebookPage("Повідомлення", () =>
-            {
-                СпільніФорми_ВивідПовідомленняПроПомилки page = new СпільніФорми_ВивідПовідомленняПроПомилки();
-                page.LoadRecords();
-                return page;
-            }, true);
+            СпільніФорми_ВивідПовідомленняПроПомилки page = new СпільніФорми_ВивідПовідомленняПроПомилки();
+            Program.GeneralForm?.CreateNotebookPage("Повідомлення", () => { return page; }, true);
+
+            await page.LoadRecords();
         }
     }
 }

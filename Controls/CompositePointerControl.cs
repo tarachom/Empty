@@ -32,8 +32,12 @@ namespace StorageAndTrade
 {
     class CompositePointerControl : PointerControl
     {
+        event EventHandler<UuidAndText>? PointerChanged;
+
         public CompositePointerControl()
         {
+            PointerChanged += OnPointerChanged;
+
             pointer = new UuidAndText();
             WidthPresentation = 300;
             Caption = "Основа:";
@@ -49,12 +53,22 @@ namespace StorageAndTrade
             set
             {
                 pointer = value;
-
-                if (pointer != null)
-                    Presentation = Functions.CompositePointerPresentation(pointer, out PointerName, out TypeCaption);
-                else
-                    Presentation = PointerName = TypeCaption = "";
+                PointerChanged?.Invoke(this, pointer);
             }
+        }
+
+        protected async void OnPointerChanged(object? sender, UuidAndText pointer)
+        {
+            if (pointer != null)
+            {
+                var record = await Functions.CompositePointerPresentation(pointer);
+                
+                Presentation = record.result;
+                PointerName = record.pointer;
+                TypeCaption = record.type;
+            }
+            else
+                Presentation = PointerName = TypeCaption = "";
         }
 
         /// <summary>
@@ -72,12 +86,12 @@ namespace StorageAndTrade
         /// </summary>
         string GetBasisName()
         {
-            return !String.IsNullOrEmpty(PointerName) ? PointerName + "." + TypeCaption : "";
+            return !string.IsNullOrEmpty(PointerName) ? PointerName + "." + TypeCaption : "";
         }
 
         protected override void OpenSelect(object? sender, EventArgs args)
         {
-            if (String.IsNullOrEmpty(PointerName))
+            if (string.IsNullOrEmpty(PointerName))
             {
                 //
                 // Вибір типу

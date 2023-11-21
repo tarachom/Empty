@@ -85,14 +85,11 @@ namespace StorageAndTrade
             VBox vLeft = new VBox(false, 0);
             hBoxList.PackStart(vLeft, false, false, 5);
 
-            Link.AddLink(vLeft, $"{Блокнот_Const.FULLNAME}", () =>
+            Link.AddLink(vLeft, $"{Блокнот_Const.FULLNAME}", async () =>
             {
-                Program.GeneralForm?.CreateNotebookPage($"{Блокнот_Const.FULLNAME}", () =>
-                {
-                    Блокнот page = new Блокнот();
-                    page.LoadRecords();
-                    return page;
-                });
+                Блокнот page = new Блокнот();
+                Program.GeneralForm?.CreateNotebookPage($"{Блокнот_Const.FULLNAME}", () => { return page; });
+                await page.LoadRecords();
             });
 
             ShowAll();

@@ -31,11 +31,11 @@ namespace StorageAndTrade
             set
             {
                 pointer = value;
-                Presentation = (pointer != null ? pointer.GetPresentation() : "");
+                Presentation = pointer != null ? Task.Run(async () => { return await pointer.GetPresentation(); }).Result : "";
             }
         }
 
-        protected override void OpenSelect(object? sender, EventArgs args)
+        protected override async void OpenSelect(object? sender, EventArgs args)
         {
             Popover PopoverSmallSelect = new Popover((Button)sender!) { Position = PositionType.Bottom, BorderWidth = 2 };
 
@@ -54,7 +54,7 @@ namespace StorageAndTrade
             PopoverSmallSelect.Add(page);
             PopoverSmallSelect.ShowAll();
 
-            page.LoadRecords();
+            await page.LoadRecords();
         }
 
         protected override void OnClear(object? sender, EventArgs args)
@@ -66,4 +66,3 @@ namespace StorageAndTrade
         }
     }
 }
-    

@@ -46,9 +46,11 @@ namespace StorageAndTrade_1_0.Довідники
             ДовідникОбєкт.Код = (++НумераціяДовідників.Користувачі_Const).ToString("D6");
         }
 
-        public static void Copying(Користувачі_Objest ДовідникОбєкт, Користувачі_Objest Основа)
+        public static async ValueTask Copying(Користувачі_Objest ДовідникОбєкт, Користувачі_Objest Основа)
         {
             ДовідникОбєкт.Назва += " - Копія";
+
+            await ValueTask.FromResult(true);
         }
 
         public static void BeforeSave(Користувачі_Objest ДовідникОбєкт)
@@ -61,14 +63,14 @@ namespace StorageAndTrade_1_0.Довідники
 
         }
 
-        public static void SetDeletionLabel(Користувачі_Objest ДовідникОбєкт, bool label)
+        public static async ValueTask SetDeletionLabel(Користувачі_Objest ДовідникОбєкт, bool label)
         {
-
+            await ValueTask.FromResult(true);
         }
 
-        public static void BeforeDelete(Користувачі_Objest ДовідникОбєкт)
+        public static async ValueTask BeforeDelete(Користувачі_Objest ДовідникОбєкт)
         {
-
+            await ValueTask.FromResult(true);
         }
     }
 
@@ -79,9 +81,11 @@ namespace StorageAndTrade_1_0.Довідники
             ДовідникОбєкт.Код = (++НумераціяДовідників.Блокнот_Const).ToString("D6");
         }
 
-        public static void Copying(Блокнот_Objest ДовідникОбєкт, Блокнот_Objest Основа)
+        public static async ValueTask Copying(Блокнот_Objest ДовідникОбєкт, Блокнот_Objest Основа)
         {
             ДовідникОбєкт.Назва += " - Копія";
+
+            await ValueTask.FromResult(true);
         }
 
         public static void BeforeSave(Блокнот_Objest ДовідникОбєкт)
@@ -94,14 +98,14 @@ namespace StorageAndTrade_1_0.Довідники
 
         }
 
-        public static void SetDeletionLabel(Блокнот_Objest ДовідникОбєкт, bool label)
+        public static async ValueTask SetDeletionLabel(Блокнот_Objest ДовідникОбєкт, bool label)
         {
-
+            await ValueTask.FromResult(true);
         }
 
-        public static void BeforeDelete(Блокнот_Objest ДовідникОбєкт)
+        public static async ValueTask BeforeDelete(Блокнот_Objest ДовідникОбєкт)
         {
-
+            await ValueTask.FromResult(true);
         }
     }
 
@@ -110,6 +114,6 @@ namespace StorageAndTrade_1_0.Довідники
 namespace StorageAndTrade_1_0.Документи
 {
 
-    
+
 
 }

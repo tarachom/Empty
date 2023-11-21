@@ -258,12 +258,13 @@ namespace StorageAndTrade
         /// Функція обробки перед збереження та після збереження
         /// </summary>
         /// <param name="closePage"></param>
-        void BeforeAndAfterSave(bool spendDoc, bool closePage = false)
+        async void BeforeAndAfterSave(bool spendDoc, bool closePage = false)
         {
             GetValue();
 
-            bool isSave = Save();
-            bool isSpend = SpendTheDocument(isSave && spendDoc ? true : false);
+            bool isSave = await Save();
+
+            bool isSpend = await SpendTheDocument(isSave && spendDoc ? true : false);
 
             if (CallBack_OnSelectPointer != null && UnigueID != null)
                 CallBack_OnSelectPointer.Invoke(UnigueID);
@@ -280,21 +281,21 @@ namespace StorageAndTrade
         /// <summary>
         /// Збереження
         /// </summary>
-        protected virtual bool Save() { return false; }
+        protected virtual ValueTask<bool> Save() { return new ValueTask<bool>(); }
 
         /// <summary>
         /// Проведення
         /// </summary>
         /// <param name="spendDoc">Провести</param>
-        protected virtual bool SpendTheDocument(bool spendDoc) { return false; }
+        protected virtual ValueTask<bool> SpendTheDocument(bool spendDoc) { return new ValueTask<bool>(); }
 
         /// <summary>
         /// Записати повідомлення про помилку і вивести меседж
         /// </summary>
         /// <param name="ex">Помилка</param>
-        protected void MsgError(Exception ex)
+        protected async void MsgError(Exception ex)
         {
-            ФункціїДляПовідомлень.ДодатиПовідомленняПроПомилку(DateTime.Now, "Запис", UnigueID?.UGuid, "Документи", Caption, ex.Message);
+            await ФункціїДляПовідомлень.ДодатиПовідомленняПроПомилку(DateTime.Now, "Запис", UnigueID?.UGuid, "Документи", Caption, ex.Message + "\n" + ex.StackTrace + "\n" + ex.Source);
             ФункціїДляПовідомлень.ВідкритиТермінал();
 
             Message.Info(Program.GeneralForm, "Не вдалось записати");

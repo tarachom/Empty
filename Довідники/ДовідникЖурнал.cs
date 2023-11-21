@@ -49,8 +49,8 @@ namespace StorageAndTrade
             PackStart(HBoxTop, false, false, 10);
 
             //Пошук
-            ПошукПовнотекстовий.Select = LoadRecords_OnSearch;
-            ПошукПовнотекстовий.Clear = LoadRecords;
+            ПошукПовнотекстовий.Select = async (string x) => { await LoadRecords_OnSearch(x); };
+            ПошукПовнотекстовий.Clear = async () => { await LoadRecords(); };
             HBoxTop.PackStart(ПошукПовнотекстовий, false, false, 2);
 
             CreateToolbar();
@@ -118,20 +118,20 @@ namespace StorageAndTrade
 
         #region Virtual Function
 
-        public virtual void LoadRecords() { }
+        public virtual ValueTask LoadRecords() { return new ValueTask(); }
 
-        protected virtual void LoadRecords_OnSearch(string searchText) { }
+        protected virtual ValueTask LoadRecords_OnSearch(string searchText) { return new ValueTask(); }
 
         protected virtual void OpenPageElement(bool IsNew, UnigueID? unigueID = null) { }
 
-        protected virtual void SetDeletionLabel(UnigueID unigueID) { }
+        protected virtual ValueTask SetDeletionLabel(UnigueID unigueID) { return new ValueTask(); }
 
-        protected virtual UnigueID? Copy(UnigueID unigueID) { return null; }
+        protected virtual ValueTask<UnigueID?> Copy(UnigueID unigueID) { return new ValueTask<UnigueID?>(); }
 
-        public virtual void CallBack_LoadRecords(UnigueID? selectPointer)
+        public virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
-            LoadRecords();
+            await LoadRecords();
         }
 
         #endregion
@@ -185,7 +185,7 @@ namespace StorageAndTrade
             }
         }
 
-        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             /*
             if (args.Event.State == (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask))
@@ -201,54 +201,54 @@ namespace StorageAndTrade
             }
             else
             */
-                switch (args.Event.Key)
-                {
-                    case Gdk.Key.Insert:
-                        {
-                            OpenPageElement(true);
-                            break;
-                        }
-                    case Gdk.Key.F5:
-                        {
-                            LoadRecords();
-                            break;
-                        }
-                    case Gdk.Key.KP_Enter:
-                    case Gdk.Key.Return:
-                        {
-                            OnEditClick(null, new EventArgs());
-                            break;
-                        }
-                    case Gdk.Key.End:
-                    case Gdk.Key.Home:
-                    case Gdk.Key.Up:
-                    case Gdk.Key.Down:
-                    case Gdk.Key.Prior:
-                    case Gdk.Key.Next:
-                        {
-                            OnRowActivated(TreeViewGrid, new RowActivatedArgs());
-                            break;
-                        }
-                    case Gdk.Key.Delete:
-                        {
-                            OnDeleteClick(TreeViewGrid, new EventArgs());
-                            break;
-                        }
-                }
+            switch (args.Event.Key)
+            {
+                case Gdk.Key.Insert:
+                    {
+                        OpenPageElement(true);
+                        break;
+                    }
+                case Gdk.Key.F5:
+                    {
+                        await LoadRecords();
+                        break;
+                    }
+                case Gdk.Key.KP_Enter:
+                case Gdk.Key.Return:
+                    {
+                        OnEditClick(null, new EventArgs());
+                        break;
+                    }
+                case Gdk.Key.End:
+                case Gdk.Key.Home:
+                case Gdk.Key.Up:
+                case Gdk.Key.Down:
+                case Gdk.Key.Prior:
+                case Gdk.Key.Next:
+                    {
+                        OnRowActivated(TreeViewGrid, new RowActivatedArgs());
+                        break;
+                    }
+                case Gdk.Key.Delete:
+                    {
+                        OnDeleteClick(TreeViewGrid, new EventArgs());
+                        break;
+                    }
+            }
         }
 
         // void OnKeyPressEvent(object? sender, KeyPressEventArgs args)
         // {
-            // Console.WriteLine(args.Event.State);
-            // Console.WriteLine(Gdk.ModifierType.ControlMask);
-            // Console.WriteLine(Gdk.ModifierType.Mod2Mask);
-            // Console.WriteLine(Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask);
-            // Console.WriteLine(args.Event.Key);
+        // Console.WriteLine(args.Event.State);
+        // Console.WriteLine(Gdk.ModifierType.ControlMask);
+        // Console.WriteLine(Gdk.ModifierType.Mod2Mask);
+        // Console.WriteLine(Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask);
+        // Console.WriteLine(args.Event.Key);
 
-            // if (args.Event.State == (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask) && args.Event.Key == Gdk.Key.Return)
-            // {
-            //     Console.WriteLine(1);
-            // }
+        // if (args.Event.State == (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask) && args.Event.Key == Gdk.Key.Return)
+        // {
+        //     Console.WriteLine(1);
+        // }
         //}
 
         #endregion
@@ -278,12 +278,12 @@ namespace StorageAndTrade
             }
         }
 
-        void OnRefreshClick(object? sender, EventArgs args)
+        async void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadRecords();
+            await LoadRecords();
         }
 
-        void OnDeleteClick(object? sender, EventArgs args)
+        async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -298,17 +298,17 @@ namespace StorageAndTrade
 
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                        SetDeletionLabel(unigueID);
+                        await SetDeletionLabel(unigueID);
 
                         SelectPointerItem = unigueID;
                     }
 
-                    LoadRecords();
+                    await LoadRecords();
                 }
             }
         }
 
-        void OnCopyClick(object? sender, EventArgs args)
+        async void OnCopyClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -323,13 +323,13 @@ namespace StorageAndTrade
 
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                        UnigueID? newUnigueID = Copy(unigueID);
+                        UnigueID? newUnigueID = await Copy(unigueID);
 
                         if (newUnigueID != null)
                             SelectPointerItem = newUnigueID;
                     }
 
-                    LoadRecords();
+                    await LoadRecords();
                 }
             }
         }

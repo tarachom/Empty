@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 16.05.2023 08:31:22
+ * Дата конфігурації: 21.11.2023 14:07:46
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон Gtk.xslt
@@ -91,7 +91,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
         public static TreePath? SelectPath;
         public static TreePath? CurrentPath;
 
-        public static void LoadRecords()
+        public static async ValueTask LoadRecords()
         {
             Store.Clear();
             FirstPath = SelectPath = CurrentPath = null;
@@ -114,7 +114,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             
 
             /* SELECT */
-            Користувачі_Select.Select();
+            await Користувачі_Select.Select();
             while (Користувачі_Select.MoveNext())
             {
                 Довідники.Користувачі_Pointer? cur = Користувачі_Select.Current;
@@ -196,7 +196,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
         public static TreePath? SelectPath;
         public static TreePath? CurrentPath;
 
-        public static void LoadRecords()
+        public static async ValueTask LoadRecords()
         {
             Store.Clear();
             FirstPath = SelectPath = CurrentPath = null;
@@ -219,7 +219,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             
 
             /* SELECT */
-            Користувачі_Select.Select();
+            await Користувачі_Select.Select();
             while (Користувачі_Select.MoveNext())
             {
                 Довідники.Користувачі_Pointer? cur = Користувачі_Select.Current;
@@ -306,7 +306,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
         public static TreePath? SelectPath;
         public static TreePath? CurrentPath;
 
-        public static void LoadRecords()
+        public static async ValueTask LoadRecords()
         {
             Store.Clear();
             FirstPath = SelectPath = CurrentPath = null;
@@ -329,7 +329,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             
 
             /* SELECT */
-            Блокнот_Select.Select();
+            await Блокнот_Select.Select();
             while (Блокнот_Select.MoveNext())
             {
                 Довідники.Блокнот_Pointer? cur = Блокнот_Select.Current;
@@ -411,7 +411,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
         public static TreePath? SelectPath;
         public static TreePath? CurrentPath;
 
-        public static void LoadRecords()
+        public static async ValueTask LoadRecords()
         {
             Store.Clear();
             FirstPath = SelectPath = CurrentPath = null;
@@ -431,7 +431,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             
 
             /* SELECT */
-            Блокнот_Select.Select();
+            await Блокнот_Select.Select();
             while (Блокнот_Select.MoveNext())
             {
                 Довідники.Блокнот_Pointer? cur = Блокнот_Select.Current;
@@ -624,7 +624,7 @@ namespace StorageAndTrade_1_0.Документи.ТабличніСписки
         public static TreePath? CurrentPath;
 
         // Завантаження даних
-        public static void LoadRecords()
+        public static async ValueTask LoadRecords() 
         {
             Store.Clear();
             SelectPath = CurrentPath = null;

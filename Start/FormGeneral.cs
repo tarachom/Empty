@@ -52,15 +52,11 @@ namespace StorageAndTrade
             if (File.Exists(Program.IcoFileName))
                 SetDefaultIconFromFile(Program.IcoFileName);
 
-            HeaderBar headerBar = new HeaderBar();
-            headerBar.ShowCloseButton = true;
-            headerBar.Title = "Проект";
-            headerBar.Subtitle = "Довідкова інформація";
+            HeaderBar headerBar = new HeaderBar() { Title = "\"Зберігання та Торгівля\" для України", Subtitle = "Облік складу, торгівлі та фінансів", ShowCloseButton = true };
             Titlebar = headerBar;
 
             //Повнотекстовий пошук
-            Button buttonFind = new Button();
-            buttonFind.Add(new Image(AppContext.BaseDirectory + "images/find.png"));
+            Button buttonFind = new Button() { { new Image(AppContext.BaseDirectory + "images/find.png") } };
             buttonFind.Clicked += OnButtonFindClicked;
             headerBar.PackEnd(buttonFind);
 
@@ -78,21 +74,23 @@ namespace StorageAndTrade
             ShowAll();
         }
 
-        public void SetCurrentUser()
+        public async void SetCurrentUser()
         {
             KernelUser = Config.Kernel!.User;
             KernelSession = Config.Kernel!.Session;
 
-            Користувачі_Pointer ЗнайденийКористувач = new Користувачі_Select().FindByField(Користувачі_Const.КодВСпеціальнійТаблиці, KernelUser);
+            Користувачі_Pointer ЗнайденийКористувач = await new Користувачі_Select().FindByField(Користувачі_Const.КодВСпеціальнійТаблиці, KernelUser);
 
             if (ЗнайденийКористувач.IsEmpty())
             {
-                Користувачі_Objest НовийКористувач = new Користувачі_Objest();
+                Користувачі_Objest НовийКористувач = new Користувачі_Objest
+                {
+                    КодВСпеціальнійТаблиці = Config.Kernel!.User,
+                    Назва = await Config.Kernel.DataBase.SpetialTableUsersGetFullName(KernelUser)
+                };
+
                 НовийКористувач.New();
-                НовийКористувач.Код = (++НумераціяДовідників.Користувачі_Const).ToString("D6");
-                НовийКористувач.КодВСпеціальнійТаблиці = Config.Kernel!.User;
-                НовийКористувач.Назва = Config.Kernel!.DataBase.SpetialTableUsersGetFullName(KernelUser);
-                НовийКористувач.Save();
+                await НовийКористувач.Save();
 
                 Program.Користувач = НовийКористувач.GetDirectoryPointer();
             }
@@ -163,7 +161,7 @@ namespace StorageAndTrade
 
         */
 
-        void CalculationVirtualBalances()
+        async void CalculationVirtualBalances()
         {
             int counter = 0;
 
@@ -182,11 +180,11 @@ namespace StorageAndTrade
                     //провести всі документ, а тоді вже розраховувати регістри
                     if (!Системні.ЗупинитиФоновіЗадачі_Const)
                     {
+                        //if (Config.Kernel != null)
                         //Виконання обчислень
-                        Config.Kernel!.DataBase.SpetialTableRegAccumTrigerExecute(
-                            KernelSession,
-                            VirtualTablesСalculation.Execute,
-                            VirtualTablesСalculation.ExecuteFinalCalculation);
+                        await Config.Kernel!.DataBase.SpetialTableRegAccumTrigerExecute(KernelSession,
+                             VirtualTablesСalculation.Execute,
+                             VirtualTablesСalculation.ExecuteFinalCalculation);
                     }
 
                     counter = 0;
@@ -199,12 +197,12 @@ namespace StorageAndTrade
             }
 
             //Закрити поточну сесію
-            Config.Kernel!.DataBase.SpetialTableActiveUsersCloseSession(KernelSession);
+            await Config.Kernel!.DataBase.SpetialTableActiveUsersCloseSession(KernelSession);
         }
 
-        void UpdateSession()
+        async void UpdateSession()
         {
-            if (!Config.Kernel!.DataBase.SpetialTableActiveUsersUpdateSession(KernelSession))
+            if (!await Config.Kernel!.DataBase.SpetialTableActiveUsersUpdateSession(KernelSession))
             {
                 // Log Off
             }
@@ -216,8 +214,7 @@ namespace StorageAndTrade
 
         void CreateLeftMenu(HBox hbox)
         {
-            VBox vbox = new VBox();
-            vbox.BorderWidth = 0;
+            VBox vbox = new VBox() { BorderWidth = 0 };
 
             ScrolledWindow scrolLeftMenu = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = 170 };
             scrolLeftMenu.SetPolicy(PolicyType.Never, PolicyType.Never);
@@ -343,7 +340,7 @@ namespace StorageAndTrade
 
             if (pageWidget != null)
             {
-                Widget widget = (Widget)pageWidget.Invoke();
+                Widget widget = pageWidget.Invoke();
                 scroll.Add(widget);
 
                 widget.Name = codePage;
@@ -455,7 +452,7 @@ namespace StorageAndTrade
         /// <returns></returns>
         public string SubstringPageName(string pageName)
         {
-            return (pageName.Length >= 33 ? pageName.Substring(0, 30) + "..." : pageName);
+            return pageName.Length >= 33 ? pageName.Substring(0, 30) + "..." : pageName;
         }
 
         #endregion
