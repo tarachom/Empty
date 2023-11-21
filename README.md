@@ -1,17 +1,32 @@
 # Чиста конфігурація для розробки
- <img src="https://accounting.org.ua/images/preferences.png?v=3" /> <b>Базові класи і функції для розробки нової програми або навчання </b> | .net 7, Linux, Windows <br/>
+ <img src="https://accounting.org.ua/images/preferences.png?v=3" /> <b>Базові класи і функції для розробки нової програми або навчання </b> | .net 8, Linux, Windows <br/>
 
  <hr />
 
- <b>Встановлення dotnet-sdk для Ubuntu 22.10</b>
+ <b>Встановлення dotnet-sdk для Ubuntu</b>
  
- Детальніше - [Install the .NET SDK or the .NET Runtime on Ubuntu](https://learn.microsoft.com/uk-ua/dotnet/core/install/linux-ubuntu)<br/>
- 
-    wget https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+ [Install the .NET SDK or the .NET Runtime on Ubuntu](https://learn.microsoft.com/uk-ua/dotnet/core/install/linux-ubuntu#register-the-microsoft-package-repository)<br/>
+
+    # Get Ubuntu version
+    declare repo_version=$(if command -v lsb_release &> /dev/null; then lsb_release -r -s; else grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"'; fi)
+
+    # Download Microsoft signing key and repository
+    wget https://packages.microsoft.com/config/ubuntu/$repo_version/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+
+    # Install Microsoft signing key and repository
     sudo dpkg -i packages-microsoft-prod.deb
+
+    # Clean up
     rm packages-microsoft-prod.deb
-    
-    sudo apt-get update && sudo apt-get install -y dotnet-sdk-7.0
+
+    # Update packages
+    sudo apt update
+
+    # Встановлення sdk
+    sudo apt-get install -y dotnet-sdk-8.0
+
+    # Встановлення runtime
+    sudo apt-get install -y aspnetcore-runtime-8.0
     
     # Переглянути детальну інформацію про встановлені версії sdk і runtimes
     dotnet --list-sdks && dotnet --list-runtimes
@@ -20,7 +35,7 @@
 
  <b>Встановлення PostgreSQL для Ubuntu</b>
  
- Детальніше - [PostgreSQL](https://www.postgresql.org/download/linux/ubuntu/)<br/>
+[PostgreSQL](https://www.postgresql.org/download/linux/ubuntu/)<br/>
  
     sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
