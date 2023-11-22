@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 22.11.2023 14:19:21
+ * Дата конфігурації: 22.11.2023 18:56:45
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -389,11 +389,12 @@ namespace StorageAndTrade_1_0.Довідники
             
         }
         
-        public void New()
+        public async ValueTask New()
         {
             BaseNew();
-            Користувачі_Triggers.New(this);
             
+                await Користувачі_Triggers.New(this);
+              
         }
 
         public async ValueTask<bool> Read(UnigueID uid)
@@ -429,7 +430,7 @@ namespace StorageAndTrade_1_0.Довідники
             if (result)
             {
                 Користувачі_Triggers.AfterSave(this);
-                await BaseWriteFullTextSearch(GetBasis(), new string[] {  });
+                await BaseWriteFullTextSearch(GetBasis(), new string[] { Назва, Коментар });
             }
             return result;
         }
@@ -444,7 +445,7 @@ namespace StorageAndTrade_1_0.Довідники
             copy.Заблокований = Заблокований;
             
 
-            copy.New();
+            await copy.New();
             
                 await Користувачі_Triggers.Copying(copy, this);
             return copy;
@@ -617,11 +618,12 @@ namespace StorageAndTrade_1_0.Довідники
             
         }
         
-        public void New()
+        public async ValueTask New()
         {
             BaseNew();
-            Блокнот_Triggers.New(this);
             
+                await Блокнот_Triggers.New(this);
+              
         }
 
         public async ValueTask<bool> Read(UnigueID uid)
@@ -653,7 +655,7 @@ namespace StorageAndTrade_1_0.Довідники
             if (result)
             {
                 Блокнот_Triggers.AfterSave(this);
-                await BaseWriteFullTextSearch(GetBasis(), new string[] { Запис });
+                await BaseWriteFullTextSearch(GetBasis(), new string[] { Назва, Запис });
             }
             return result;
         }
@@ -666,7 +668,7 @@ namespace StorageAndTrade_1_0.Довідники
             copy.Запис = Запис;
             
 
-            copy.New();
+            await copy.New();
             
                 await Блокнот_Triggers.Copying(copy, this);
             return copy;

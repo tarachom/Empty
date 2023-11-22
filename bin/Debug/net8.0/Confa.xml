@@ -6,7 +6,7 @@
   </Author>
   <Desc>
   </Desc>
-  <DateTimeSave>22.11.2023 14:19:21</DateTimeSave>
+  <DateTimeSave>22.11.2023 18:56:45</DateTimeSave>
   <ConstantsBlocks>
     <ConstantsBlock>
       <Name>Системні</Name>
@@ -174,7 +174,7 @@
           <Desc>Назва</Desc>
           <IsPresentation>1</IsPresentation>
           <IsIndex>0</IsIndex>
-          <IsFullTextSearch>0</IsFullTextSearch>
+          <IsFullTextSearch>1</IsFullTextSearch>
           <Multiline>0</Multiline>
         </Field>
         <Field>
@@ -195,7 +195,7 @@
           </Desc>
           <IsPresentation>0</IsPresentation>
           <IsIndex>0</IsIndex>
-          <IsFullTextSearch>0</IsFullTextSearch>
+          <IsFullTextSearch>1</IsFullTextSearch>
           <Multiline>0</Multiline>
         </Field>
         <Field>
@@ -302,7 +302,7 @@
           <Desc>Назва</Desc>
           <IsPresentation>1</IsPresentation>
           <IsIndex>1</IsIndex>
-          <IsFullTextSearch>0</IsFullTextSearch>
+          <IsFullTextSearch>1</IsFullTextSearch>
           <Multiline>0</Multiline>
         </Field>
         <Field>

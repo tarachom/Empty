@@ -41,9 +41,11 @@ namespace StorageAndTrade_1_0.Довідники
 {
     class Користувачі_Triggers
     {
-        public static void New(Користувачі_Objest ДовідникОбєкт)
+        public static async ValueTask New(Користувачі_Objest ДовідникОбєкт)
         {
             ДовідникОбєкт.Код = (++НумераціяДовідників.Користувачі_Const).ToString("D6");
+
+            await ValueTask.FromResult(true);
         }
 
         public static async ValueTask Copying(Користувачі_Objest ДовідникОбєкт, Користувачі_Objest Основа)
@@ -76,9 +78,11 @@ namespace StorageAndTrade_1_0.Довідники
 
     class Блокнот_Triggers
     {
-        public static void New(Блокнот_Objest ДовідникОбєкт)
+        public static async ValueTask New(Блокнот_Objest ДовідникОбєкт)
         {
             ДовідникОбєкт.Код = (++НумераціяДовідників.Блокнот_Const).ToString("D6");
+
+            await ValueTask.FromResult(true);
         }
 
         public static async ValueTask Copying(Блокнот_Objest ДовідникОбєкт, Блокнот_Objest Основа)
@@ -113,7 +117,5 @@ namespace StorageAndTrade_1_0.Довідники
 
 namespace StorageAndTrade_1_0.Документи
 {
-
-
 
 }

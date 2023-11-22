@@ -58,10 +58,10 @@ namespace StorageAndTrade
 
         #region Присвоєння / зчитування значень
 
-        public override void SetValue()
+        public override async void SetValue()
         {
             if (IsNew)
-                Користувачі_Objest.New();
+                await Користувачі_Objest.New();
 
             Код.Text = Користувачі_Objest.Код;
             Назва.Text = Користувачі_Objest.Назва;
@@ -90,7 +90,7 @@ namespace StorageAndTrade
         {
             try
             {
-               await Користувачі_Objest.Save();
+                await Користувачі_Objest.Save();
             }
             catch (Exception ex)
             {
