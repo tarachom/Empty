@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 21.11.2023 14:07:46
+ * Дата конфігурації: 22.11.2023 14:19:21
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -412,6 +412,9 @@ namespace StorageAndTrade_1_0.Довідники
             else
                 return false;
         }
+
+        /* синхронна функція для Read(UnigueID uid) */
+        public bool ReadSync(UnigueID uid) { return Task.Run<bool>(async () => { return await Read(uid); }).Result; }
         
         public async ValueTask<bool> Save()
         {
@@ -461,6 +464,9 @@ namespace StorageAndTrade_1_0.Довідники
                 await Користувачі_Triggers.BeforeDelete(this);
             await base.BaseDelete(new string[] {  });
         }
+
+        /* синхронна функція для Delete() */
+        public bool DeleteSync() { return Task.Run<bool>(async () => { await Delete(); return true; }).Result; } 
         
         public Користувачі_Pointer GetDirectoryPointer()
         {
@@ -478,6 +484,9 @@ namespace StorageAndTrade_1_0.Довідники
                 new string[] { "col_a2" }
             );
         }
+        
+        /* синхронна функція для GetPresentation() */
+        public string GetPresentationSync() { return Task.Run<string>(async () => { return await GetPresentation(); }).Result; }
         
         public string Код { get; set; }
         public string Назва { get; set; }
@@ -519,6 +528,9 @@ namespace StorageAndTrade_1_0.Довідники
                 new string[] { "col_a2" }
             );
         }
+
+        /* синхронна функція для GetPresentation() */
+        public string GetPresentationSync() { return Task.Run<string>(async () => { return await GetPresentation(); }).Result; }
 
         public async ValueTask SetDeletionLabel(bool label = true)
         {
@@ -626,6 +638,9 @@ namespace StorageAndTrade_1_0.Довідники
             else
                 return false;
         }
+
+        /* синхронна функція для Read(UnigueID uid) */
+        public bool ReadSync(UnigueID uid) { return Task.Run<bool>(async () => { return await Read(uid); }).Result; }
         
         public async ValueTask<bool> Save()
         {
@@ -671,6 +686,9 @@ namespace StorageAndTrade_1_0.Довідники
                 await Блокнот_Triggers.BeforeDelete(this);
             await base.BaseDelete(new string[] {  });
         }
+
+        /* синхронна функція для Delete() */
+        public bool DeleteSync() { return Task.Run<bool>(async () => { await Delete(); return true; }).Result; } 
         
         public Блокнот_Pointer GetDirectoryPointer()
         {
@@ -688,6 +706,9 @@ namespace StorageAndTrade_1_0.Довідники
                 new string[] { "col_a2" }
             );
         }
+        
+        /* синхронна функція для GetPresentation() */
+        public string GetPresentationSync() { return Task.Run<string>(async () => { return await GetPresentation(); }).Result; }
         
         public string Код { get; set; }
         public string Назва { get; set; }
@@ -727,6 +748,9 @@ namespace StorageAndTrade_1_0.Довідники
                 new string[] { "col_a2" }
             );
         }
+
+        /* синхронна функція для GetPresentation() */
+        public string GetPresentationSync() { return Task.Run<string>(async () => { return await GetPresentation(); }).Result; }
 
         public async ValueTask SetDeletionLabel(bool label = true)
         {
@@ -936,14 +960,14 @@ namespace StorageAndTrade_1_0.РегістриНакопичення
         }
 
         /* Функція для обчислення віртуальних таблиць  */
-        public static async void Execute(DateTime period, string regAccumName)
+        public static async ValueTask Execute(DateTime period, string regAccumName)
         {
             if (Config.Kernel == null) return;
             
         }
 
         /* Функція для обчислення підсумкових віртуальних таблиць */
-        public static async void ExecuteFinalCalculation(List<string> regAccumNameList)
+        public static async ValueTask ExecuteFinalCalculation(List<string> regAccumNameList)
         {
             if (Config.Kernel == null) return;
             
