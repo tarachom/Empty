@@ -82,55 +82,37 @@ namespace StorageAndTrade
 
         public void AutoRefreshRun()
         {
-            Program.ListCancellationToken.Add(CancellationTokenSourceItem = new CancellationTokenSource());
-
-            Thread ThreadAutoRefresh = new Thread(new ThreadStart(LoadRecordsAsync));
-            ThreadAutoRefresh.Start();
+            CancellationTokenSourceItem = new CancellationTokenSource();
+            LoadRecordsAsync();
         }
 
-        public void LoadRecordsAsync()
+        public async void LoadRecordsAsync()
         {
-            int counter = 0;
-
             while (!CancellationTokenSourceItem!.IsCancellationRequested)
             {
-                if (counter == 0 || counter > 5)
-                {
-                    LoadRecords();
-                    
-                    counter = 1;
-                }
+                await LoadRecords();
 
-                counter++;
-
-                //Затримка на 1 сек
-                Thread.Sleep(1000);
+                //Затримка на 5 сек
+                await Task.Delay(5000);
             }
         }
 
-        void LoadRecords()
+        async ValueTask LoadRecords()
         {
-            Gtk.Application.Invoke
-            (
-                delegate
-                {
-                    Store.Clear();
+            var recordResult = await Config.Kernel!.DataBase.SpetialTableActiveUsersSelect();
 
-                    List<Dictionary<string, object>> listRow = Config.Kernel!.DataBase.SpetialTableActiveUsersSelect();
-
-                    foreach (Dictionary<string, object> record in listRow)
-                    {
-                        Store.AppendValues(
-                            record["uid"].ToString(),
-                            record["usersuid"].ToString(),
-                            record["username"].ToString(),
-                            record["datelogin"].ToString(),
-                            record["dateupdate"].ToString(),
-                            record["master"]
-                        );
-                    }
-                }
-            );
+            Store.Clear();
+            foreach (Dictionary<string, object> record in recordResult.ListRow)
+            {
+                Store.AppendValues(
+                    record["uid"].ToString(),
+                    record["usersuid"].ToString(),
+                    record["username"].ToString(),
+                    record["datelogin"].ToString(),
+                    record["dateupdate"].ToString(),
+                    record["master"]
+                );
+            }
         }
 
         #region TreeView

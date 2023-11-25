@@ -59,6 +59,7 @@ namespace StorageAndTrade
 
         protected Toolbar ToolbarTop = new Toolbar();
         protected TreeView TreeViewGrid = new TreeView();
+        //private readonly TargetEntry[] targets = [new TargetEntry("GTK_TREE_MODEL_ROW", TargetFlags.Widget, 0)];
 
         public ДовідникДерево() : base()
         {
@@ -74,12 +75,27 @@ namespace StorageAndTrade
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
 
+            // TreeViewGrid.EnableModelDragSource(Gdk.ModifierType.ModifierMask, targets, /*Gdk.DragAction.Copy | */Gdk.DragAction.Move);
+            // TreeViewGrid.EnableModelDragDest(targets, /*Gdk.DragAction.Copy | */Gdk.DragAction.Move);
+
+            // TreeViewGrid.DragBegin += OnDragBegin;
+            // TreeViewGrid.DragEnd += OnDragEnd;
+
             scrollTree.Add(TreeViewGrid);
 
             PackStart(scrollTree, true, true, 0);
 
             ShowAll();
         }
+
+        // void OnDragBegin(object sender, DragBeginArgs args)
+        // {
+        //     Console.WriteLine("OnDragBegin");
+        // }
+        // void OnDragEnd(object sender, DragEndArgs args)
+        // {
+        //     Console.WriteLine("OnDragEnd");
+        // }
 
         #region Toolbar & Menu
 
@@ -135,7 +151,7 @@ namespace StorageAndTrade
 
         protected virtual void OpenPageElement(bool IsNew, UnigueID? unigueID = null) { }
 
-        protected virtual void SetDeletionLabel(UnigueID unigueID) { }
+        protected virtual ValueTask SetDeletionLabel(UnigueID unigueID) { return new ValueTask(); }
 
         protected virtual ValueTask<UnigueID?> Copy(UnigueID unigueID) { return new ValueTask<UnigueID?>(); }
 
@@ -273,7 +289,7 @@ namespace StorageAndTrade
             LoadTree();
         }
 
-        void OnDeleteClick(object? sender, EventArgs args)
+        async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -289,7 +305,7 @@ namespace StorageAndTrade
                     if (unigueID.IsEmpty())
                         return;
 
-                    SetDeletionLabel(unigueID);
+                    await SetDeletionLabel(unigueID);
 
                     DirectoryPointerItem = unigueID;
 

@@ -34,12 +34,14 @@ namespace StorageAndTrade
     {
         public Configurator.ConfigurationParam? OpenConfigurationParam { get; set; }
         CancellationTokenSource? CancellationTokenBackgroundTask;
-
         Guid KernelUser { get; set; } = Guid.Empty;
         Guid KernelSession { get; set; } = Guid.Empty;
 
         Notebook topNotebook = new Notebook() { Scrollable = true, EnablePopup = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
         Statusbar statusBar = new Statusbar();
+
+        //Список для збереження історії послідовності відкриття вкладок
+        List<string> historyNotebookSwitchList = new List<string>();
 
         public FormGeneral() : base("")
         {
@@ -52,7 +54,13 @@ namespace StorageAndTrade
             if (File.Exists(Program.IcoFileName))
                 SetDefaultIconFromFile(Program.IcoFileName);
 
-            HeaderBar headerBar = new HeaderBar() { Title = "\"Зберігання та Торгівля\" для України", Subtitle = "Облік складу, торгівлі та фінансів", ShowCloseButton = true };
+            HeaderBar headerBar = new HeaderBar()
+            {
+                Title = "\"Зберігання та Торгівля\" для України",
+                Subtitle = "Облік складу, торгівлі та фінансів",
+                ShowCloseButton = true
+            };
+
             Titlebar = headerBar;
 
             //Повнотекстовий пошук
@@ -69,9 +77,23 @@ namespace StorageAndTrade
             CreateLeftMenu(hBox);
 
             hBox.PackStart(topNotebook, true, true, 0);
+            topNotebook.SwitchPage += OnSwitchPageTopNotebook;
+
             vBox.PackStart(statusBar, false, false, 0);
 
             ShowAll();
+        }
+
+        //Переключення сторінок блокноту
+        void OnSwitchPageTopNotebook(object? sender, SwitchPageArgs args)
+        {
+            string currPageUID = args.Page.Name;
+
+            if (historyNotebookSwitchList.Contains(currPageUID))
+                historyNotebookSwitchList.Remove(currPageUID);
+
+            /* Поточна сторінка ставиться у кінець списку */
+            historyNotebookSwitchList.Add(currPageUID);
         }
 
         public async void SetCurrentUser()
@@ -100,15 +122,11 @@ namespace StorageAndTrade
 
         public void OpenFirstPages()
         {
-            CreateNotebookPage("Стартова", () =>
-            {
-                PageHome page = new PageHome();
+            PageHome page = new PageHome();
+            CreateNotebookPage("Стартова", () => { return page; });
 
-                //Активні користувачі
-                page.АктивніКористувачі.AutoRefreshRun();
-
-                return page;
-            });
+            //Активні користувачі
+            page.АктивніКористувачі.AutoRefreshRun();
         }
 
         #region FullTextSearch
@@ -138,10 +156,11 @@ namespace StorageAndTrade
 
         public void StartBackgroundTask()
         {
-            Program.ListCancellationToken.Add(CancellationTokenBackgroundTask = new CancellationTokenSource());
+            //Токен для зупинки процесу обчислення (для випадку коли буде потреба зупинити фонові обчислення)
+            CancellationTokenBackgroundTask = new CancellationTokenSource();
 
-            Thread ThreadBackgroundTask = new Thread(new ThreadStart(CalculationVirtualBalances));
-            ThreadBackgroundTask.Start();
+            //Обчислення віртуальних залишків по регістрах
+            CalculationVirtualBalances();
         }
 
         /*
@@ -163,41 +182,27 @@ namespace StorageAndTrade
 
         async void CalculationVirtualBalances()
         {
-            int counter = 0;
-
-            //Обновлення сесії
-            UpdateSession();
-
-            while (!CancellationTokenBackgroundTask!.IsCancellationRequested)
+            while (!CancellationTokenBackgroundTask?.IsCancellationRequested ?? false)
             {
-                //Раз на 5 сек
-                if (counter >= 5)
+                //Обновлення сесії
+                UpdateSession();
+
+                //Зупинка розрахунків використовується при масовому перепроведенні документів щоб
+                //провести всі документ, а тоді вже розраховувати регістри
+                if (!Системні.ЗупинитиФоновіЗадачі_Const)
                 {
-                    //Обновлення сесії
-                    UpdateSession();
-
-                    //Зупинка розрахунків використовується при масовому перепроведенні документів щоб
-                    //провести всі документ, а тоді вже розраховувати регістри
-                    if (!Системні.ЗупинитиФоновіЗадачі_Const)
-                    {
-                        //if (Config.Kernel != null)
-                        //Виконання обчислень
-                        await Config.Kernel!.DataBase.SpetialTableRegAccumTrigerExecute(KernelSession,
-                             VirtualTablesСalculation.Execute,
-                             VirtualTablesСalculation.ExecuteFinalCalculation);
-                    }
-
-                    counter = 0;
+                    //Виконання обчислень
+                    await Config.Kernel!.DataBase.SpetialTableRegAccumTrigerExecute(KernelSession,
+                         VirtualTablesСalculation.Execute, VirtualTablesСalculation.ExecuteFinalCalculation);
                 }
 
-                counter++;
-
-                //Затримка на 1 сек
-                Thread.Sleep(1000);
+                //Затримка на 5 сек
+                await Task.Delay(5000);
             }
 
             //Закрити поточну сесію
-            await Config.Kernel!.DataBase.SpetialTableActiveUsersCloseSession(KernelSession);
+            //await Config.Kernel!.DataBase.SpetialTableActiveUsersCloseSession(KernelSession);
+            //Console.WriteLine("CloseSession");
         }
 
         async void UpdateSession()
@@ -323,7 +328,7 @@ namespace StorageAndTrade
         /// <param name="tabName">Назва сторінки</param>
         /// <param name="pageWidget">Віджет для сторінки</param>
         /// <param name="insertPage">Вставити сторінку перед поточною</param>
-        public void CreateNotebookPage(string tabName, System.Func<Widget>? pageWidget, bool insertPage = false)
+        public void CreateNotebookPage(string tabName, Func<Widget>? pageWidget, bool insertPage = false)
         {
             int numPage;
             string codePage = Guid.NewGuid().ToString();
@@ -396,7 +401,15 @@ namespace StorageAndTrade
                 (Widget wg) =>
                 {
                     if (wg.Name == codePage)
+                    {
+                        if (historyNotebookSwitchList.Contains(codePage))
+                            historyNotebookSwitchList.Remove(codePage);
+
+                        if (historyNotebookSwitchList.Count > 0)
+                            CurrentNotebookPageToCode(topNotebook, historyNotebookSwitchList[historyNotebookSwitchList.Count - 1]);
+
                         notebook.DetachTab(wg);
+                    }
                 });
         }
 
@@ -443,6 +456,33 @@ namespace StorageAndTrade
 
                     counter++;
                 });
+        }
+
+        /// <summary>
+        /// Блокування чи розблокування поточної сторінки по коду
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="codePage">Код</param>
+        /// <param name="sensitive">Значення</param>
+        public void SensitiveNotebookPageToCode(Notebook notebook, string codePage, bool sensitive)
+        {
+            notebook.Foreach(
+                (Widget wg) =>
+                {
+                    if (wg.Name == codePage)
+                        wg.Sensitive = sensitive;
+                });
+        }
+
+        /// <summary>
+        /// Блокування чи розблокування для основного блокноту
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="codePage">Код</param>
+        /// <param name="sensitive">Значення</param>
+        public void SensitiveNotebookPageToCode(string codePage, bool sensitive)
+        {
+            SensitiveNotebookPageToCode(topNotebook, codePage, sensitive);
         }
 
         /// <summary>
