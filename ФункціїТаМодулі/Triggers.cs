@@ -55,14 +55,14 @@ namespace StorageAndTrade_1_0.Довідники
             await ValueTask.FromResult(true);
         }
 
-        public static void BeforeSave(Користувачі_Objest ДовідникОбєкт)
+        public static async ValueTask BeforeSave(Користувачі_Objest ДовідникОбєкт)
         {
-
+            await ValueTask.FromResult(true);
         }
 
-        public static void AfterSave(Користувачі_Objest ДовідникОбєкт)
+        public static async ValueTask AfterSave(Користувачі_Objest ДовідникОбєкт)
         {
-
+            await ValueTask.FromResult(true);
         }
 
         public static async ValueTask SetDeletionLabel(Користувачі_Objest ДовідникОбєкт, bool label)
@@ -92,14 +92,14 @@ namespace StorageAndTrade_1_0.Довідники
             await ValueTask.FromResult(true);
         }
 
-        public static void BeforeSave(Блокнот_Objest ДовідникОбєкт)
+        public static async ValueTask BeforeSave(Блокнот_Objest ДовідникОбєкт)
         {
-
+            await ValueTask.FromResult(true);
         }
 
-        public static void AfterSave(Блокнот_Objest ДовідникОбєкт)
+        public static async ValueTask AfterSave(Блокнот_Objest ДовідникОбєкт)
         {
-
+            await ValueTask.FromResult(true);
         }
 
         public static async ValueTask SetDeletionLabel(Блокнот_Objest ДовідникОбєкт, bool label)

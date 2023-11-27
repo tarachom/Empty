@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 22.11.2023 18:56:45
+ * Дата конфігурації: 27.11.2023 16:00:17
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон Gtk.xslt
@@ -46,14 +46,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
     /* ТАБЛИЦЯ */
     public class Користувачі_Записи
     {
-        string Image 
-        {
-            get
-            {
-                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
-            }
-        }
-
+        string Image { get { return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png"); } }
         bool DeletionLabel = false;
         string ID = "";
         
@@ -62,14 +55,12 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
         Array ToArray()
         {
-            return new object[] { new Gdk.Pixbuf(Image), ID
-            /* */ , Код, Назва };
+            return new object[] { new Gdk.Pixbuf(Image), ID,
+            Код, Назва,  };
         }
 
-        public static ListStore Store = new ListStore(typeof(Gdk.Pixbuf) /* Image */, typeof(string) /* ID */
-            , typeof(string) /* Код */
-            , typeof(string) /* Назва */
-            );
+        public static ListStore Store = new ListStore([/*Image*/ typeof(Gdk.Pixbuf), /*ID*/ typeof(string),
+            /*Код*/ typeof(string), /*Назва*/ typeof(string), ]);
 
         public static void AddColumns(TreeView treeView)
         {
@@ -83,7 +74,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             treeView.AppendColumn(new TreeViewColumn());
         }
 
-        public static List<Where> Where { get; set; } = new List<Where>();
+        public static List<Where> Where { get; set; } = [];
 
         public static UnigueID? DirectoryPointerItem { get; set; }
         public static UnigueID? SelectPointerItem { get; set; }
@@ -98,12 +89,11 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
             Довідники.Користувачі_Select Користувачі_Select = new Довідники.Користувачі_Select();
             Користувачі_Select.QuerySelect.Field.AddRange(
-                new string[]
-                { "deletion_label" /*Помітка на видалення*/
-                    , Довідники.Користувачі_Const.Код /* 1 */
-                    , Довідники.Користувачі_Const.Назва /* 2 */
-                    
-                });
+                ["deletion_label",
+                  /*Код*/ Довідники.Користувачі_Const.Код,
+                  /*Назва*/ Довідники.Користувачі_Const.Назва,
+                  
+                ]);
 
             /* Where */
             Користувачі_Select.QuerySelect.Where = Where;
@@ -125,8 +115,8 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
                     {
                         ID = cur.UnigueID.ToString(),
                         DeletionLabel = (bool)cur.Fields?["deletion_label"]!, /*Помітка на видалення*/
-                        Код = cur.Fields?[Користувачі_Const.Код]?.ToString() ?? "", /**/
-                        Назва = cur.Fields?[Користувачі_Const.Назва]?.ToString() ?? "" /**/
+                        Код = cur.Fields[Користувачі_Const.Код].ToString() ?? "", /**/
+                        Назва = cur.Fields[Користувачі_Const.Назва].ToString() ?? "" /**/
                         
                     };
 
@@ -151,14 +141,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
     /* ТАБЛИЦЯ */
     public class Користувачі_ЗаписиШвидкийВибір
     {
-        string Image 
-        {
-            get
-            {
-                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
-            }
-        }
-
+        string Image { get { return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png"); } }
         bool DeletionLabel = false;
         string ID = "";
         
@@ -167,14 +150,12 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
         Array ToArray()
         {
-            return new object[] { new Gdk.Pixbuf(Image), ID
-            /* */ , Код, Назва };
+            return new object[] { new Gdk.Pixbuf(Image), ID,
+            Код, Назва,  };
         }
 
-        public static ListStore Store = new ListStore(typeof(Gdk.Pixbuf) /* Image */, typeof(string) /* ID */
-            , typeof(string) /* Код */
-            , typeof(string) /* Назва */
-            );
+        public static ListStore Store = new ListStore([/*Image*/ typeof(Gdk.Pixbuf), /*ID*/ typeof(string),
+            /*Код*/ typeof(string), /*Назва*/ typeof(string), ]);
 
         public static void AddColumns(TreeView treeView)
         {
@@ -188,7 +169,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             treeView.AppendColumn(new TreeViewColumn());
         }
 
-        public static List<Where> Where { get; set; } = new List<Where>();
+        public static List<Where> Where { get; set; } = [];
 
         public static UnigueID? DirectoryPointerItem { get; set; }
         public static UnigueID? SelectPointerItem { get; set; }
@@ -203,12 +184,11 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
             Довідники.Користувачі_Select Користувачі_Select = new Довідники.Користувачі_Select();
             Користувачі_Select.QuerySelect.Field.AddRange(
-                new string[]
-                { "deletion_label" /*Помітка на видалення*/
-                    , Довідники.Користувачі_Const.Код /* 1 */
-                    , Довідники.Користувачі_Const.Назва /* 2 */
-                    
-                });
+                ["deletion_label",
+                  /*Код*/ Довідники.Користувачі_Const.Код,
+                  /*Назва*/ Довідники.Користувачі_Const.Назва,
+                  
+                ]);
 
             /* Where */
             Користувачі_Select.QuerySelect.Where = Where;
@@ -230,8 +210,8 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
                     {
                         ID = cur.UnigueID.ToString(),
                         DeletionLabel = (bool)cur.Fields?["deletion_label"]!, /*Помітка на видалення*/
-                        Код = cur.Fields?[Користувачі_Const.Код]?.ToString() ?? "", /**/
-                        Назва = cur.Fields?[Користувачі_Const.Назва]?.ToString() ?? "" /**/
+                        Код = cur.Fields[Користувачі_Const.Код].ToString() ?? "", /**/
+                        Назва = cur.Fields[Користувачі_Const.Назва].ToString() ?? "" /**/
                         
                     };
 
@@ -261,14 +241,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
     /* ТАБЛИЦЯ */
     public class Блокнот_Записи
     {
-        string Image 
-        {
-            get
-            {
-                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
-            }
-        }
-
+        string Image { get { return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png"); } }
         bool DeletionLabel = false;
         string ID = "";
         
@@ -277,14 +250,12 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
         Array ToArray()
         {
-            return new object[] { new Gdk.Pixbuf(Image), ID
-            /* */ , Код, Назва };
+            return new object[] { new Gdk.Pixbuf(Image), ID,
+            Код, Назва,  };
         }
 
-        public static ListStore Store = new ListStore(typeof(Gdk.Pixbuf) /* Image */, typeof(string) /* ID */
-            , typeof(string) /* Код */
-            , typeof(string) /* Назва */
-            );
+        public static ListStore Store = new ListStore([/*Image*/ typeof(Gdk.Pixbuf), /*ID*/ typeof(string),
+            /*Код*/ typeof(string), /*Назва*/ typeof(string), ]);
 
         public static void AddColumns(TreeView treeView)
         {
@@ -298,7 +269,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             treeView.AppendColumn(new TreeViewColumn());
         }
 
-        public static List<Where> Where { get; set; } = new List<Where>();
+        public static List<Where> Where { get; set; } = [];
 
         public static UnigueID? DirectoryPointerItem { get; set; }
         public static UnigueID? SelectPointerItem { get; set; }
@@ -313,12 +284,11 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
             Довідники.Блокнот_Select Блокнот_Select = new Довідники.Блокнот_Select();
             Блокнот_Select.QuerySelect.Field.AddRange(
-                new string[]
-                { "deletion_label" /*Помітка на видалення*/
-                    , Довідники.Блокнот_Const.Код /* 1 */
-                    , Довідники.Блокнот_Const.Назва /* 2 */
-                    
-                });
+                ["deletion_label",
+                  /*Код*/ Довідники.Блокнот_Const.Код,
+                  /*Назва*/ Довідники.Блокнот_Const.Назва,
+                  
+                ]);
 
             /* Where */
             Блокнот_Select.QuerySelect.Where = Where;
@@ -340,8 +310,8 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
                     {
                         ID = cur.UnigueID.ToString(),
                         DeletionLabel = (bool)cur.Fields?["deletion_label"]!, /*Помітка на видалення*/
-                        Код = cur.Fields?[Блокнот_Const.Код]?.ToString() ?? "", /**/
-                        Назва = cur.Fields?[Блокнот_Const.Назва]?.ToString() ?? "" /**/
+                        Код = cur.Fields[Блокнот_Const.Код].ToString() ?? "", /**/
+                        Назва = cur.Fields[Блокнот_Const.Назва].ToString() ?? "" /**/
                         
                     };
 
@@ -366,14 +336,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
     /* ТАБЛИЦЯ */
     public class Блокнот_ЗаписиШвидкийВибір
     {
-        string Image 
-        {
-            get
-            {
-                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
-            }
-        }
-
+        string Image { get { return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png"); } }
         bool DeletionLabel = false;
         string ID = "";
         
@@ -382,14 +345,12 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
         Array ToArray()
         {
-            return new object[] { new Gdk.Pixbuf(Image), ID
-            /* */ , Код, Назва };
+            return new object[] { new Gdk.Pixbuf(Image), ID,
+            Код, Назва,  };
         }
 
-        public static ListStore Store = new ListStore(typeof(Gdk.Pixbuf) /* Image */, typeof(string) /* ID */
-            , typeof(string) /* Код */
-            , typeof(string) /* Назва */
-            );
+        public static ListStore Store = new ListStore([/*Image*/ typeof(Gdk.Pixbuf), /*ID*/ typeof(string),
+            /*Код*/ typeof(string), /*Назва*/ typeof(string), ]);
 
         public static void AddColumns(TreeView treeView)
         {
@@ -403,7 +364,7 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
             treeView.AppendColumn(new TreeViewColumn());
         }
 
-        public static List<Where> Where { get; set; } = new List<Where>();
+        public static List<Where> Where { get; set; } = [];
 
         public static UnigueID? DirectoryPointerItem { get; set; }
         public static UnigueID? SelectPointerItem { get; set; }
@@ -418,12 +379,11 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
 
             Довідники.Блокнот_Select Блокнот_Select = new Довідники.Блокнот_Select();
             Блокнот_Select.QuerySelect.Field.AddRange(
-                new string[]
-                { "deletion_label" /*Помітка на видалення*/
-                    , Довідники.Блокнот_Const.Код /* 1 */
-                    , Довідники.Блокнот_Const.Назва /* 2 */
-                    
-                });
+                ["deletion_label",
+                  /*Код*/ Довідники.Блокнот_Const.Код,
+                  /*Назва*/ Довідники.Блокнот_Const.Назва,
+                  
+                ]);
 
             /* Where */
             Блокнот_Select.QuerySelect.Where = Where;
@@ -442,8 +402,8 @@ namespace StorageAndTrade_1_0.Довідники.ТабличніСписки
                     {
                         ID = cur.UnigueID.ToString(),
                         DeletionLabel = (bool)cur.Fields?["deletion_label"]!, /*Помітка на видалення*/
-                        Код = cur.Fields?[Блокнот_Const.Код]?.ToString() ?? "", /**/
-                        Назва = cur.Fields?[Блокнот_Const.Назва]?.ToString() ?? "" /**/
+                        Код = cur.Fields[Блокнот_Const.Код].ToString() ?? "", /**/
+                        Назва = cur.Fields[Блокнот_Const.Назва].ToString() ?? "" /**/
                         
                     };
 
@@ -547,14 +507,7 @@ namespace StorageAndTrade_1_0.Документи.ТабличніСписки
     
     public class Журнали_Повний
     {
-        string Image 
-        {
-            get
-            {
-                return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png");
-            }
-        }
-
+        string Image { get { return AppContext.BaseDirectory + "images/" + (DeletionLabel ? "doc_delete.png" : "doc.png"); }}
         bool DeletionLabel = false;
         bool Spend = false;
         string ID = "";
@@ -568,21 +521,21 @@ namespace StorageAndTrade_1_0.Документи.ТабличніСписки
         // Масив для запису стрічки в Store
         Array ToArray()
         {
-            return new object[] { new Gdk.Pixbuf(Image), ID, Type, Spend /*Проведений документ*/
-            /* */ , Назва, Дата, Номер, Коментар };
+            return new object[] { new Gdk.Pixbuf(Image), ID, Type, /*Проведений документ*/ Spend,
+            /*Назва*/ Назва, /*Дата*/ Дата, /*Номер*/ Номер, /*Коментар*/ Коментар,  };
         }
 
         // Джерело даних для списку
-        public static ListStore Store = new ListStore(
-          typeof(Gdk.Pixbuf) /* Image */, 
-          typeof(string) /* ID */, 
-          typeof(string) /* Type */, 
-          typeof(bool) /* Spend Проведений документ*/
-            , typeof(string) /* Назва */
-            , typeof(string) /* Дата */
-            , typeof(string) /* Номер */
-            , typeof(string) /* Коментар */
-            );
+        public static ListStore Store = new ListStore([
+          typeof(Gdk.Pixbuf), /* Image */
+          typeof(string), /* ID */
+          typeof(string), /* Type */
+          typeof(bool), /* Spend Проведений документ */
+          typeof(string), /*Назва*/
+          typeof(string), /*Дата*/
+          typeof(string), /*Номер*/
+          typeof(string), /*Коментар*/
+          ]);
 
         // Добавлення колонок в список
         public static void AddColumns(TreeView treeView)
@@ -614,8 +567,10 @@ namespace StorageAndTrade_1_0.Документи.ТабличніСписки
         // Список документів які входять в журнал
         public static Dictionary<string, string> AllowDocument()
         {
-            Dictionary<string, string> allowDoc = new Dictionary<string, string>();
-            
+            Dictionary<string, string> allowDoc = new Dictionary<string, string>()
+            {
+                
+            };
             return allowDoc;
         }
 

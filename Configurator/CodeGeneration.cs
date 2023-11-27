@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 22.11.2023 18:56:45
+ * Дата конфігурації: 27.11.2023 16:00:17
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -41,7 +41,7 @@ namespace StorageAndTrade_1_0
 {
     public static class Config
     {
-        public static Kernel? Kernel { get; set; }
+        public static Kernel Kernel { get; set; } = new Kernel();
 		
         public static async ValueTask ReadAllConstants()
         {
@@ -72,7 +72,7 @@ namespace StorageAndTrade_1_0
         {
             CompositePointerPresentation_Record record = new();
 
-            if (uuidAndText.IsEmpty() || String.IsNullOrEmpty(uuidAndText.Text) || uuidAndText.Text.IndexOf(".") == -1)
+            if (uuidAndText.IsEmpty() || string.IsNullOrEmpty(uuidAndText.Text) || uuidAndText.Text.IndexOf(".") == -1)
                 return record;
 
             string[] pointer_and_type = uuidAndText.Text.Split(".", StringSplitOptions.None);
@@ -117,9 +117,9 @@ namespace StorageAndTrade_1_0.Константи
         public static async ValueTask ReadAll()
         {
             
-            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-            bool IsSelect = await Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
-                 new string[] { "col_a2", "col_a9" }, fieldValue);
+            Dictionary<string, object> fieldValue = [];
+            bool IsSelect = await Config.Kernel.DataBase.SelectAllConstants("tab_constants",
+                 ["col_a2", "col_a9", ], fieldValue);
             
             if (IsSelect)
             {
@@ -141,7 +141,7 @@ namespace StorageAndTrade_1_0.Константи
             set
             {
                 m_ЗупинитиФоновіЗадачі_Const = value;
-                Config.Kernel!.DataBase.SaveConstants("tab_constants", "col_a2", m_ЗупинитиФоновіЗадачі_Const);
+                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a2", m_ЗупинитиФоновіЗадачі_Const);
             }
         }
         
@@ -155,18 +155,15 @@ namespace StorageAndTrade_1_0.Константи
             set
             {
                 m_ПовідомленняТаПомилки_Const = value;
-                Config.Kernel!.DataBase.SaveConstants("tab_constants", "col_a9", m_ПовідомленняТаПомилки_Const);
+                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a9", m_ПовідомленняТаПомилки_Const);
             }
         }
         
         
         public class ПовідомленняТаПомилки_Помилки_TablePart : ConstantsTablePart
         {
-            public ПовідомленняТаПомилки_Помилки_TablePart() : base(Config.Kernel!, "tab_a02",
-                 new string[] { "col_a1", "col_a2", "col_a3", "col_a4", "col_a5", "col_a6" }) 
-            {
-                Records = new List<Record>();
-            }
+            public ПовідомленняТаПомилки_Помилки_TablePart() : base(Config.Kernel, "tab_a02",
+                 ["col_a1", "col_a2", "col_a3", "col_a4", "col_a5", "col_a6", ]) { }
             
             public const string TABLE = "tab_a02";
             
@@ -176,7 +173,7 @@ namespace StorageAndTrade_1_0.Константи
             public const string ТипОбєкту = "col_a4";
             public const string НазваОбєкту = "col_a5";
             public const string Повідомлення = "col_a6";
-            public List<Record> Records { get; set; }
+            public List<Record> Records { get; set; } = [];
         
             public async ValueTask Read()
             {
@@ -185,16 +182,17 @@ namespace StorageAndTrade_1_0.Константи
 
                 foreach (Dictionary<string, object> fieldValue in base.FieldValueList) 
                 {
-                    Record record = new Record();
-                    record.UID = (Guid)fieldValue["uid"];
-                    
-                    record.Дата = (fieldValue["col_a1"] != DBNull.Value) ? DateTime.Parse(fieldValue["col_a1"].ToString() ?? DateTime.MinValue.ToString()) : DateTime.MinValue;
-                    record.НазваПроцесу = fieldValue["col_a2"].ToString() ?? "";
-                    record.Обєкт = (fieldValue["col_a3"] != DBNull.Value) ? (Guid)fieldValue["col_a3"] : Guid.Empty;
-                    record.ТипОбєкту = fieldValue["col_a4"].ToString() ?? "";
-                    record.НазваОбєкту = fieldValue["col_a5"].ToString() ?? "";
-                    record.Повідомлення = fieldValue["col_a6"].ToString() ?? "";
-                    
+                    Record record = new Record()
+                    {
+                        UID = (Guid)fieldValue["uid"],
+                        Дата = (fieldValue["col_a1"] != DBNull.Value) ? DateTime.Parse(fieldValue["col_a1"].ToString() ?? DateTime.MinValue.ToString()) : DateTime.MinValue,
+                        НазваПроцесу = fieldValue["col_a2"].ToString() ?? "",
+                        Обєкт = (fieldValue["col_a3"] != DBNull.Value) ? (Guid)fieldValue["col_a3"] : Guid.Empty,
+                        ТипОбєкту = fieldValue["col_a4"].ToString() ?? "",
+                        НазваОбєкту = fieldValue["col_a5"].ToString() ?? "",
+                        Повідомлення = fieldValue["col_a6"].ToString() ?? "",
+                        
+                    };
                     Records.Add(record);
                 }
             
@@ -210,15 +208,16 @@ namespace StorageAndTrade_1_0.Константи
 
                 foreach (Record record in Records)
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-
-                    fieldValue.Add("col_a1", record.Дата);
-                    fieldValue.Add("col_a2", record.НазваПроцесу);
-                    fieldValue.Add("col_a3", record.Обєкт);
-                    fieldValue.Add("col_a4", record.ТипОбєкту);
-                    fieldValue.Add("col_a5", record.НазваОбєкту);
-                    fieldValue.Add("col_a6", record.Повідомлення);
-                    
+                    Dictionary<string, object> fieldValue = new Dictionary<string, object>()
+                    {
+                        {"col_a1", record.Дата},
+                        {"col_a2", record.НазваПроцесу},
+                        {"col_a3", record.Обєкт},
+                        {"col_a4", record.ТипОбєкту},
+                        {"col_a5", record.НазваОбєкту},
+                        {"col_a6", record.Повідомлення},
+                        
+                    };
                     record.UID = await base.BaseSave(record.UID, fieldValue);
                 }
                 
@@ -251,9 +250,9 @@ namespace StorageAndTrade_1_0.Константи
         public static async ValueTask ReadAll()
         {
             
-            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-            bool IsSelect = await Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
-                 new string[] { "col_a8" }, fieldValue);
+            Dictionary<string, object> fieldValue = [];
+            bool IsSelect = await Config.Kernel.DataBase.SelectAllConstants("tab_constants",
+                 ["col_a8", ], fieldValue);
             
             if (IsSelect)
             {
@@ -274,7 +273,7 @@ namespace StorageAndTrade_1_0.Константи
             set
             {
                 m_ОсновнийТипПеріоду_Const = value;
-                Config.Kernel!.DataBase.SaveConstants("tab_constants", "col_a8", (int)m_ОсновнийТипПеріоду_Const);
+                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a8", (int)m_ОсновнийТипПеріоду_Const);
             }
         }
              
@@ -299,9 +298,9 @@ namespace StorageAndTrade_1_0.Константи
         public static async ValueTask ReadAll()
         {
             
-            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-            bool IsSelect = await Config.Kernel!.DataBase.SelectAllConstants("tab_constants",
-                 new string[] { "col_a1", "col_a3" }, fieldValue);
+            Dictionary<string, object> fieldValue = [];
+            bool IsSelect = await Config.Kernel.DataBase.SelectAllConstants("tab_constants",
+                 ["col_a1", "col_a3", ], fieldValue);
             
             if (IsSelect)
             {
@@ -323,7 +322,7 @@ namespace StorageAndTrade_1_0.Константи
             set
             {
                 m_Користувачі_Const = value;
-                Config.Kernel!.DataBase.SaveConstants("tab_constants", "col_a1", m_Користувачі_Const);
+                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a1", m_Користувачі_Const);
             }
         }
         
@@ -337,7 +336,7 @@ namespace StorageAndTrade_1_0.Константи
             set
             {
                 m_Блокнот_Const = value;
-                Config.Kernel!.DataBase.SaveConstants("tab_constants", "col_a3", m_Блокнот_Const);
+                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a3", m_Блокнот_Const);
             }
         }
              
@@ -378,8 +377,8 @@ namespace StorageAndTrade_1_0.Довідники
 
     public class Користувачі_Objest : DirectoryObject
     {
-        public Користувачі_Objest() : base(Config.Kernel!, "tab_a08",
-             new string[] { "col_a1", "col_a2", "col_a3", "col_a4", "col_a5" }) 
+        public Користувачі_Objest() : base(Config.Kernel, "tab_a08",
+             ["col_a1", "col_a2", "col_a3", "col_a4", "col_a5", ]) 
         {
             Код = "";
             Назва = "";
@@ -419,7 +418,8 @@ namespace StorageAndTrade_1_0.Довідники
         
         public async ValueTask<bool> Save()
         {
-            Користувачі_Triggers.BeforeSave(this);
+            
+                await Користувачі_Triggers.BeforeSave(this);
             base.FieldValue["col_a1"] = Код;
             base.FieldValue["col_a2"] = Назва;
             base.FieldValue["col_a3"] = КодВСпеціальнійТаблиці;
@@ -429,20 +429,24 @@ namespace StorageAndTrade_1_0.Довідники
             bool result = await BaseSave();
             if (result)
             {
-                Користувачі_Triggers.AfterSave(this);
-                await BaseWriteFullTextSearch(GetBasis(), new string[] { Назва, Коментар });
+                
+                    await Користувачі_Triggers.AfterSave(this);
+                await BaseWriteFullTextSearch(GetBasis(), [Назва, Коментар, ]);
             }
             return result;
         }
 
         public async ValueTask<Користувачі_Objest> Copy(bool copyTableParts = false)
         {
-            Користувачі_Objest copy = new Користувачі_Objest();
-            copy.Код = Код;
-            copy.Назва = Назва;
-            copy.КодВСпеціальнійТаблиці = КодВСпеціальнійТаблиці;
-            copy.Коментар = Коментар;
-            copy.Заблокований = Заблокований;
+            Користувачі_Objest copy = new Користувачі_Objest()
+            {
+                Код = Код,
+                Назва = Назва,
+                КодВСпеціальнійТаблиці = КодВСпеціальнійТаблиці,
+                Коментар = Коментар,
+                Заблокований = Заблокований,
+                
+            };
             
 
             await copy.New();
@@ -482,7 +486,7 @@ namespace StorageAndTrade_1_0.Довідники
         public async ValueTask<string> GetPresentation()
         {
             return await base.BasePresentation(
-                new string[] { "col_a2" }
+                ["col_a2", ]
             );
         }
         
@@ -499,12 +503,12 @@ namespace StorageAndTrade_1_0.Довідники
 
     public class Користувачі_Pointer : DirectoryPointer
     {
-        public Користувачі_Pointer(object? uid = null) : base(Config.Kernel!, "tab_a08")
+        public Користувачі_Pointer(object? uid = null) : base(Config.Kernel, "tab_a08")
         {
             base.Init(new UnigueID(uid), null);
         }
         
-        public Користувачі_Pointer(UnigueID uid, Dictionary<string, object>? fields = null) : base(Config.Kernel!, "tab_a08")
+        public Користувачі_Pointer(UnigueID uid, Dictionary<string, object>? fields = null) : base(Config.Kernel, "tab_a08")
         {
             base.Init(uid, fields);
         }
@@ -526,7 +530,7 @@ namespace StorageAndTrade_1_0.Довідники
         public async ValueTask<string> GetPresentation()
         {
             return Назва = await base.BasePresentation(
-                new string[] { "col_a2" }
+                ["col_a2", ]
             );
         }
 
@@ -564,7 +568,7 @@ namespace StorageAndTrade_1_0.Довідники
     
     public class Користувачі_Select : DirectorySelect
     {
-        public Користувачі_Select() : base(Config.Kernel!, "tab_a08") { }        
+        public Користувачі_Select() : base(Config.Kernel, "tab_a08") { }        
         public async ValueTask<bool> Select() { return await base.BaseSelect(); }
         
         public async ValueTask<bool> SelectSingle() { if (await base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
@@ -609,8 +613,8 @@ namespace StorageAndTrade_1_0.Довідники
 
     public class Блокнот_Objest : DirectoryObject
     {
-        public Блокнот_Objest() : base(Config.Kernel!, "tab_a01",
-             new string[] { "col_a1", "col_a2", "col_a3" }) 
+        public Блокнот_Objest() : base(Config.Kernel, "tab_a01",
+             ["col_a1", "col_a2", "col_a3", ]) 
         {
             Код = "";
             Назва = "";
@@ -646,7 +650,8 @@ namespace StorageAndTrade_1_0.Довідники
         
         public async ValueTask<bool> Save()
         {
-            Блокнот_Triggers.BeforeSave(this);
+            
+                await Блокнот_Triggers.BeforeSave(this);
             base.FieldValue["col_a1"] = Код;
             base.FieldValue["col_a2"] = Назва;
             base.FieldValue["col_a3"] = Запис;
@@ -654,18 +659,22 @@ namespace StorageAndTrade_1_0.Довідники
             bool result = await BaseSave();
             if (result)
             {
-                Блокнот_Triggers.AfterSave(this);
-                await BaseWriteFullTextSearch(GetBasis(), new string[] { Назва, Запис });
+                
+                    await Блокнот_Triggers.AfterSave(this);
+                await BaseWriteFullTextSearch(GetBasis(), [Назва, Запис, ]);
             }
             return result;
         }
 
         public async ValueTask<Блокнот_Objest> Copy(bool copyTableParts = false)
         {
-            Блокнот_Objest copy = new Блокнот_Objest();
-            copy.Код = Код;
-            copy.Назва = Назва;
-            copy.Запис = Запис;
+            Блокнот_Objest copy = new Блокнот_Objest()
+            {
+                Код = Код,
+                Назва = Назва,
+                Запис = Запис,
+                
+            };
             
 
             await copy.New();
@@ -705,7 +714,7 @@ namespace StorageAndTrade_1_0.Довідники
         public async ValueTask<string> GetPresentation()
         {
             return await base.BasePresentation(
-                new string[] { "col_a2" }
+                ["col_a2", ]
             );
         }
         
@@ -720,12 +729,12 @@ namespace StorageAndTrade_1_0.Довідники
 
     public class Блокнот_Pointer : DirectoryPointer
     {
-        public Блокнот_Pointer(object? uid = null) : base(Config.Kernel!, "tab_a01")
+        public Блокнот_Pointer(object? uid = null) : base(Config.Kernel, "tab_a01")
         {
             base.Init(new UnigueID(uid), null);
         }
         
-        public Блокнот_Pointer(UnigueID uid, Dictionary<string, object>? fields = null) : base(Config.Kernel!, "tab_a01")
+        public Блокнот_Pointer(UnigueID uid, Dictionary<string, object>? fields = null) : base(Config.Kernel, "tab_a01")
         {
             base.Init(uid, fields);
         }
@@ -747,7 +756,7 @@ namespace StorageAndTrade_1_0.Довідники
         public async ValueTask<string> GetPresentation()
         {
             return Назва = await base.BasePresentation(
-                new string[] { "col_a2" }
+                ["col_a2", ]
             );
         }
 
@@ -785,7 +794,7 @@ namespace StorageAndTrade_1_0.Довідники
     
     public class Блокнот_Select : DirectorySelect
     {
-        public Блокнот_Select() : base(Config.Kernel!, "tab_a01") { }        
+        public Блокнот_Select() : base(Config.Kernel, "tab_a01") { }        
         public async ValueTask<bool> Select() { return await base.BaseSelect(); }
         
         public async ValueTask<bool> SelectSingle() { if (await base.BaseSelectSingle()) { MoveNext(); return true; } else { Current = null; return false; } }
@@ -926,15 +935,13 @@ namespace StorageAndTrade_1_0.Журнали
     #region Journal
     public class Journal_Select: JournalSelect
     {
-        public Journal_Select() : base(Config.Kernel!,
-             new string[] { },
-			       new string[] { }) { }
+        public Journal_Select() : base(Config.Kernel,
+             [],
+			       []) { }
 
         public async ValueTask<DocumentObject?> GetDocumentObject(bool readAllTablePart = true)
         {
-            if (Current == null)
-                return null;
-
+            if (Current == null) return null;
             switch (Current.TypeDocument)
             {
                 
