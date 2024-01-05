@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 28.11.2023 09:30:07
+ * Дата конфігурації: 05.01.2024 10:58:57
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -42,15 +42,44 @@ namespace StorageAndTrade_1_0
     public static class Config
     {
         public static Kernel Kernel { get; set; } = new Kernel();
-		
-        public static async ValueTask ReadAllConstants()
+        public static async void StartBackgroundTask()
         {
-            await Константи.Системні.ReadAll();
-            await Константи.ЖурналиДокументів.ReadAll();
-            await Константи.ПриЗапускуПрограми.ReadAll();
-            await Константи.НумераціяДовідників.ReadAll();
-            await Константи.НумераціяДокументів.ReadAll();
-            
+            /*
+            Схема роботи:
+
+            1. В процесі запису в регістр залишків - додається запис у таблицю тригерів.
+              Запис в таблицю тригерів містить дату запису в регістр, назву регістру.
+
+            2. Раз на 5 сек викликається процедура SpetialTableRegAccumTrigerExecute і
+              відбувається розрахунок віртуальних таблиць регістрів залишків.
+
+              Розраховуються тільки змінені регістри на дату проведення документу і
+              додатково на дату якщо змінена дата документу і документ уже був проведений.
+
+              Додатково розраховуються підсумки в кінці всіх розрахунків.
+            */
+
+            if (Kernel.Session == Guid.Empty)
+                throw new Exception("Порожня сесія користувача. Спочатку потрібно залогінитись, а тоді вже викликати функцію StartBackgroundTask()");
+
+            while (true)
+            {                
+                //Зупинка розрахунків використовується при масовому перепроведенні документів щоб
+                //провести всі документ, а тоді вже розраховувати регістри
+                if (!Константи.Системні.ЗупинитиФоновіЗадачі_Const)
+                {
+                    //Виконання обчислень
+                    await Kernel.DataBase.SpetialTableRegAccumTrigerExecute
+                    (
+                        Kernel.Session,
+                        РегістриНакопичення.VirtualTablesСalculation.Execute, 
+                        РегістриНакопичення.VirtualTablesСalculation.ExecuteFinalCalculation
+                    );
+                }
+
+                //Затримка на 5 сек
+                await Task.Delay(5000);
+            }
         }
     }
 
@@ -113,49 +142,31 @@ namespace StorageAndTrade_1_0.Константи
     
 	  #region CONSTANTS BLOCK "Системні"
     public static class Системні
-    {
-        public static async ValueTask ReadAll()
-        {
-            
-            Dictionary<string, object> fieldValue = [];
-            bool IsSelect = await Config.Kernel.DataBase.SelectAllConstants("tab_constants",
-                 ["col_a2", "col_a9", ], fieldValue);
-            
-            if (IsSelect)
-            {
-                m_ЗупинитиФоновіЗадачі_Const = (fieldValue["col_a2"] != DBNull.Value) ? (bool)fieldValue["col_a2"] : false;
-                m_ПовідомленняТаПомилки_Const = fieldValue["col_a9"].ToString() ?? "";
-                
-            }
-			      
-        }
-        
-        
-        static bool m_ЗупинитиФоновіЗадачі_Const = false;
+    {       
         public static bool ЗупинитиФоновіЗадачі_Const
         {
             get 
             {
-                return m_ЗупинитиФоновіЗадачі_Const;
+                var recordResult = Task.Run( async () => { return await Config.Kernel.DataBase.SelectConstants(SpecialTables.Constants, "col_a2"); } ).Result;
+                var result = recordResult.Result ? ((recordResult.Value != DBNull.Value) ? (bool)recordResult.Value : false) : false;
+                return result;
             }
             set
             {
-                m_ЗупинитиФоновіЗадачі_Const = value;
-                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a2", m_ЗупинитиФоновіЗадачі_Const);
+                Config.Kernel.DataBase.SaveConstants(SpecialTables.Constants, "col_a2", value);
             }
         }
-        
-        static string m_ПовідомленняТаПомилки_Const = "";
         public static string ПовідомленняТаПомилки_Const
         {
             get 
             {
-                return m_ПовідомленняТаПомилки_Const;
+                var recordResult = Task.Run( async () => { return await Config.Kernel.DataBase.SelectConstants(SpecialTables.Constants, "col_a9"); } ).Result;
+                var result = recordResult.Result ? (recordResult.Value.ToString() ?? "") : "";
+                return result;
             }
             set
             {
-                m_ПовідомленняТаПомилки_Const = value;
-                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a9", m_ПовідомленняТаПомилки_Const);
+                Config.Kernel.DataBase.SaveConstants(SpecialTables.Constants, "col_a9", value);
             }
         }
         
@@ -246,34 +257,18 @@ namespace StorageAndTrade_1_0.Константи
     
 	  #region CONSTANTS BLOCK "ЖурналиДокументів"
     public static class ЖурналиДокументів
-    {
-        public static async ValueTask ReadAll()
-        {
-            
-            Dictionary<string, object> fieldValue = [];
-            bool IsSelect = await Config.Kernel.DataBase.SelectAllConstants("tab_constants",
-                 ["col_a8", ], fieldValue);
-            
-            if (IsSelect)
-            {
-                m_ОсновнийТипПеріоду_Const = (fieldValue["col_a8"] != DBNull.Value) ? (Перелічення.ТипПеріодуДляЖурналівДокументів)fieldValue["col_a8"] : 0;
-                
-            }
-			      
-        }
-        
-        
-        static Перелічення.ТипПеріодуДляЖурналівДокументів m_ОсновнийТипПеріоду_Const = 0;
+    {       
         public static Перелічення.ТипПеріодуДляЖурналівДокументів ОсновнийТипПеріоду_Const
         {
             get 
             {
-                return m_ОсновнийТипПеріоду_Const;
+                var recordResult = Task.Run( async () => { return await Config.Kernel.DataBase.SelectConstants(SpecialTables.Constants, "col_a8"); } ).Result;
+                var result = recordResult.Result ? ((recordResult.Value != DBNull.Value) ? (Перелічення.ТипПеріодуДляЖурналівДокументів)recordResult.Value : 0) : 0;
+                return result;
             }
             set
             {
-                m_ОсновнийТипПеріоду_Const = value;
-                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a8", (int)m_ОсновнийТипПеріоду_Const);
+                Config.Kernel.DataBase.SaveConstants(SpecialTables.Constants, "col_a8", (int)value);
             }
         }
              
@@ -282,61 +277,38 @@ namespace StorageAndTrade_1_0.Константи
     
 	  #region CONSTANTS BLOCK "ПриЗапускуПрограми"
     public static class ПриЗапускуПрограми
-    {
-        public static async ValueTask ReadAll()
-        {
-            
-        }
-        
+    {       
              
     }
     #endregion
     
 	  #region CONSTANTS BLOCK "НумераціяДовідників"
     public static class НумераціяДовідників
-    {
-        public static async ValueTask ReadAll()
-        {
-            
-            Dictionary<string, object> fieldValue = [];
-            bool IsSelect = await Config.Kernel.DataBase.SelectAllConstants("tab_constants",
-                 ["col_a1", "col_a3", ], fieldValue);
-            
-            if (IsSelect)
-            {
-                m_Користувачі_Const = (fieldValue["col_a1"] != DBNull.Value) ? (int)fieldValue["col_a1"] : 0;
-                m_Блокнот_Const = (fieldValue["col_a3"] != DBNull.Value) ? (int)fieldValue["col_a3"] : 0;
-                
-            }
-			      
-        }
-        
-        
-        static int m_Користувачі_Const = 0;
+    {       
         public static int Користувачі_Const
         {
             get 
             {
-                return m_Користувачі_Const;
+                var recordResult = Task.Run( async () => { return await Config.Kernel.DataBase.SelectConstants(SpecialTables.Constants, "col_a1"); } ).Result;
+                var result = recordResult.Result ? ((recordResult.Value != DBNull.Value) ? (int)recordResult.Value : 0) : 0;
+                return result;
             }
             set
             {
-                m_Користувачі_Const = value;
-                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a1", m_Користувачі_Const);
+                Config.Kernel.DataBase.SaveConstants(SpecialTables.Constants, "col_a1", value);
             }
         }
-        
-        static int m_Блокнот_Const = 0;
         public static int Блокнот_Const
         {
             get 
             {
-                return m_Блокнот_Const;
+                var recordResult = Task.Run( async () => { return await Config.Kernel.DataBase.SelectConstants(SpecialTables.Constants, "col_a3"); } ).Result;
+                var result = recordResult.Result ? ((recordResult.Value != DBNull.Value) ? (int)recordResult.Value : 0) : 0;
+                return result;
             }
             set
             {
-                m_Блокнот_Const = value;
-                Config.Kernel.DataBase.SaveConstants("tab_constants", "col_a3", m_Блокнот_Const);
+                Config.Kernel.DataBase.SaveConstants(SpecialTables.Constants, "col_a3", value);
             }
         }
              
@@ -345,12 +317,7 @@ namespace StorageAndTrade_1_0.Константи
     
 	  #region CONSTANTS BLOCK "НумераціяДокументів"
     public static class НумераціяДокументів
-    {
-        public static async ValueTask ReadAll()
-        {
-            
-        }
-        
+    {       
              
     }
     #endregion
@@ -364,9 +331,9 @@ namespace StorageAndTrade_1_0.Довідники
     public static class Користувачі_Const
     {
         public const string TABLE = "tab_a08";
-        public const string POINTER = "Довідники.Користувачі";
-        public const string FULLNAME = "Користувачі";
-        public const string DELETION_LABEL = "deletion_label";
+        public const string POINTER = "Довідники.Користувачі"; /* Повна назва вказівника */
+        public const string FULLNAME = "Користувачі"; /* Повна назва об'єкта */
+        public const string DELETION_LABEL = "deletion_label"; /* Помітка на видалення true|false */
         
         public const string Код = "col_a1";
         public const string Назва = "col_a2";
@@ -602,9 +569,9 @@ namespace StorageAndTrade_1_0.Довідники
     public static class Блокнот_Const
     {
         public const string TABLE = "tab_a01";
-        public const string POINTER = "Довідники.Блокнот";
-        public const string FULLNAME = "Блокнот";
-        public const string DELETION_LABEL = "deletion_label";
+        public const string POINTER = "Довідники.Блокнот"; /* Повна назва вказівника */
+        public const string FULLNAME = "Блокнот"; /* Повна назва об'єкта */
+        public const string DELETION_LABEL = "deletion_label"; /* Помітка на видалення true|false */
         
         public const string Код = "col_a1";
         public const string Назва = "col_a2";
@@ -972,14 +939,14 @@ namespace StorageAndTrade_1_0.РегістриНакопичення
         public static async ValueTask Execute(DateTime period, string regAccumName)
         {
             if (Config.Kernel == null) return;
-            
+            await ValueTask.FromResult(true);
         }
 
         /* Функція для обчислення підсумкових віртуальних таблиць */
         public static async ValueTask ExecuteFinalCalculation(List<string> regAccumNameList)
         {
             if (Config.Kernel == null) return;
-            
+            await ValueTask.FromResult(true);
         }
     }
 

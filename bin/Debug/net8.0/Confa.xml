@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <Name>Нова конфігурація</Name>
-  <NameSpace>StorageAndTrade_1_0</NameSpace>
+  <NameSpaceGenerationCode>StorageAndTrade_1_0</NameSpaceGenerationCode>
+  <NameSpace>StorageAndTrade</NameSpace>
   <Author>
   </Author>
   <Desc>
   </Desc>
-  <DateTimeSave>27.11.2023 16:00:17</DateTimeSave>
+  <DateTimeSave>05.01.2024 10:58:57</DateTimeSave>
   <ConstantsBlocks>
     <ConstantsBlock>
       <Name>Системні</Name>
