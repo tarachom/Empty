@@ -27,7 +27,7 @@ limitations under the License.
  * Конфігурації "Нова конфігурація"
  * Автор 
   
- * Дата конфігурації: 15.01.2024 18:23:52
+ * Дата конфігурації: 15.01.2024 19:10:10
  *
  *
  * Цей код згенерований в Конфігураторі 3. Шаблон CodeGeneration.xslt
@@ -347,11 +347,6 @@ namespace StorageAndTrade_1_0.Довідники
         public Користувачі_Objest() : base(Config.Kernel, "tab_a08",
              ["col_a1", "col_a2", "col_a3", "col_a4", "col_a5", ]) 
         {
-            Код = "";
-            Назва = "";
-            КодВСпеціальнійТаблиці = new Guid();
-            Коментар = "";
-            Заблокований = false;
             
         }
         
@@ -460,11 +455,11 @@ namespace StorageAndTrade_1_0.Довідники
         /* синхронна функція для GetPresentation() */
         public string GetPresentationSync() { return Task.Run<string>(async () => { return await GetPresentation(); }).Result; }
         
-        public string Код { get; set; }
-        public string Назва { get; set; }
-        public Guid КодВСпеціальнійТаблиці { get; set; }
-        public string Коментар { get; set; }
-        public bool Заблокований { get; set; }
+        public string Код { get; set; } = "";
+        public string Назва { get; set; } = "";
+        public Guid КодВСпеціальнійТаблиці { get; set; } = new Guid();
+        public string Коментар { get; set; } = "";
+        public bool Заблокований { get; set; } = false;
         
     }
 
@@ -583,9 +578,6 @@ namespace StorageAndTrade_1_0.Довідники
         public Блокнот_Objest() : base(Config.Kernel, "tab_a01",
              ["col_a1", "col_a2", "col_a3", ]) 
         {
-            Код = "";
-            Назва = "";
-            Запис = "";
             
         }
         
@@ -688,9 +680,9 @@ namespace StorageAndTrade_1_0.Довідники
         /* синхронна функція для GetPresentation() */
         public string GetPresentationSync() { return Task.Run<string>(async () => { return await GetPresentation(); }).Result; }
         
-        public string Код { get; set; }
-        public string Назва { get; set; }
-        public string Запис { get; set; }
+        public string Код { get; set; } = "";
+        public string Назва { get; set; } = "";
+        public string Запис { get; set; } = "";
         
     }
 
