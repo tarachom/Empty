@@ -15,7 +15,6 @@ namespace StorageAndTrade
     {
         public Блокнот() : base()
         {
-            TreeViewGrid.Model = ТабличніСписки.Блокнот_Записи.Store;
             ТабличніСписки.Блокнот_Записи.AddColumns(TreeViewGrid);
         }
 
@@ -26,9 +25,9 @@ namespace StorageAndTrade
             ТабличніСписки.Блокнот_Записи.SelectPointerItem = SelectPointerItem;
             ТабличніСписки.Блокнот_Записи.DirectoryPointerItem = DirectoryPointerItem;
 
-            ТабличніСписки.Блокнот_Записи.Where.Clear();
+            ТабличніСписки.Блокнот_Записи.ОчиститиВідбір(TreeViewGrid);
 
-            await ТабличніСписки.Блокнот_Записи.LoadRecords();
+            await ТабличніСписки.Блокнот_Записи.LoadRecords(TreeViewGrid);
 
             if (ТабличніСписки.Блокнот_Записи.SelectPath != null)
                 TreeViewGrid.SetCursor(ТабличніСписки.Блокнот_Записи.SelectPath, TreeViewGrid.Columns[0], false);
@@ -45,13 +44,10 @@ namespace StorageAndTrade
 
             searchText = "%" + searchText.Replace(" ", "%") + "%";
 
-            ТабличніСписки.Блокнот_Записи.Where.Clear();
+            //Відбори
+            ТабличніСписки.Блокнот_Записи.ДодатиВідбір(TreeViewGrid, Блокнот_ВідбориДляПошуку.Відбори(searchText), true);
 
-            //Назва
-            ТабличніСписки.Блокнот_Записи.Where.Add(
-                new Where(Блокнот_Const.Назва, Comparison.LIKE, searchText) { FuncToField = "LOWER" });
-
-            await ТабличніСписки.Блокнот_Записи.LoadRecords();
+            await ТабличніСписки.Блокнот_Записи.LoadRecords(TreeViewGrid);
 
             if (ТабличніСписки.Блокнот_Записи.FirstPath != null)
                 TreeViewGrid.SetCursor(ТабличніСписки.Блокнот_Записи.FirstPath, TreeViewGrid.Columns[0], false);
